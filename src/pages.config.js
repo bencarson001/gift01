@@ -47,8 +47,30 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Home from './pages/Home';
+import CreateBook from './pages/CreateBook';
+import BookPreview from './pages/BookPreview';
+import Checkout from './pages/Checkout';
+import MyLibrary from './pages/MyLibrary';
+import SharedBook from './pages/SharedBook';
+import Pricing from './pages/Pricing';
+import Dashboard from './pages/Dashboard';
+import __Layout from './Layout.jsx';
 
-export const pagesConfig = {
-	Pages: {}
+
+export const PAGES = {
+    "Home": Home,
+    "CreateBook": CreateBook,
+    "BookPreview": BookPreview,
+    "Checkout": Checkout,
+    "MyLibrary": MyLibrary,
+    "SharedBook": SharedBook,
+    "Pricing": Pricing,
+    "Dashboard": Dashboard,
 }
 
+export const pagesConfig = {
+    mainPage: "Home",
+    Pages: PAGES,
+    Layout: __Layout,
+};
