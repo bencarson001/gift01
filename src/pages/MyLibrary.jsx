@@ -79,11 +79,16 @@ export default function MyLibrary() {
           <Link to={createPageUrl("Home")} className="font-serif text-xl font-bold text-gray-900">
             GiftMyBook<span className="text-amber-500">UK</span>
           </Link>
-          <Link to={createPageUrl("CreateBook")}>
-            <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl shadow-md shadow-purple-200">
-              <Plus className="w-4 h-4 mr-1.5" /> New Book
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to={createPageUrl("Referrals")} className="text-sm text-purple-600 hover:text-purple-800 font-medium hidden sm:block">
+              🎁 Earn £5
+            </Link>
+            <Link to={createPageUrl("CreateBook")}>
+              <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl shadow-md shadow-purple-200">
+                <Plus className="w-4 h-4 mr-1.5" /> New Book
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
