@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import FlipbookPreview from "../components/FlipbookPreview";
 import SparkleParticles from "../components/SparkleParticles";
+import FloatingHearts from "../components/FloatingHearts";
 
 export default function BookPreview() {
   const navigate = useNavigate();
@@ -91,8 +92,11 @@ Return the full updated pages array.`,
     );
   }
 
+  const isCouplesOccasion = book?.occasion === "couples_love_story" || book?.occasion === "valentines" || book?.occasion === "anniversary" || book?.occasion === "wedding";
+
   return (
     <div className="min-h-screen gradient-soft">
+      <FloatingHearts active={isCouplesOccasion} count={12} />
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
