@@ -6,6 +6,7 @@ import { BookOpen, Sparkles, Truck, Heart, Shield, Clock, Award, ArrowRight } fr
 import { Button } from "@/components/ui/button";
 import TestimonialCarousel from "../components/TestimonialCarousel";
 import SparkleParticles from "../components/SparkleParticles";
+import DarkSparkle from "../components/DarkSparkle";
 
 const TRUST_BADGES = [
   { icon: Shield, label: "GDPR Compliant" },
@@ -27,6 +28,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#4A2D7A] to-[#2D1B4E] text-white">
         <SparkleParticles active count={20} />
+        <DarkSparkle active />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80')] bg-cover bg-center opacity-10" />
         
         <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-32">
