@@ -56,6 +56,7 @@ import MyLibrary from './pages/MyLibrary';
 import Pricing from './pages/Pricing';
 import SharedBook from './pages/SharedBook';
 import OrderSuccess from './pages/OrderSuccess';
+import Referrals from './pages/Referrals';
 import __Layout from './Layout.jsx';
 
 
@@ -69,6 +70,7 @@ export const PAGES = {
     "Pricing": Pricing,
     "SharedBook": SharedBook,
     "OrderSuccess": OrderSuccess,
+    "Referrals": Referrals,
 }
 
 export const pagesConfig = {
