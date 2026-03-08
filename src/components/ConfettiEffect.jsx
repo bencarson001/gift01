@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const COLORS = ["#D4A853", "#E8A0BF", "#7B5EA7", "#4A2D7A", "#F0D88A", "#FF6B6B", "#4ECDC4"];
+const COLORS = ["#D4A853", "#E8A0BF", "#7B5EA7", "#4A2D7A", "#F0D88A", "#FF6B6B", "#4ECDC4", "#FF9F43", "#6C5CE7", "#00CEC9"];
 
 export default function ConfettiEffect({ active = false }) {
   const [pieces, setPieces] = useState([]);
 
   useEffect(() => {
     if (active) {
-      const newPieces = Array.from({ length: 60 }, (_, i) => ({
+      const newPieces = Array.from({ length: 100 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
