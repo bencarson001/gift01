@@ -47,26 +47,28 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Home from './pages/Home';
-import CreateBook from './pages/CreateBook';
 import BookPreview from './pages/BookPreview';
 import Checkout from './pages/Checkout';
-import MyLibrary from './pages/MyLibrary';
-import SharedBook from './pages/SharedBook';
-import Pricing from './pages/Pricing';
+import CreateBook from './pages/CreateBook';
 import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
+import MyLibrary from './pages/MyLibrary';
+import Pricing from './pages/Pricing';
+import SharedBook from './pages/SharedBook';
+import OrderSuccess from './pages/OrderSuccess';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "CreateBook": CreateBook,
     "BookPreview": BookPreview,
     "Checkout": Checkout,
-    "MyLibrary": MyLibrary,
-    "SharedBook": SharedBook,
-    "Pricing": Pricing,
+    "CreateBook": CreateBook,
     "Dashboard": Dashboard,
+    "Home": Home,
+    "MyLibrary": MyLibrary,
+    "Pricing": Pricing,
+    "SharedBook": SharedBook,
+    "OrderSuccess": OrderSuccess,
 }
 
 export const pagesConfig = {
