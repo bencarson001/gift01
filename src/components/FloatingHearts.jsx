@@ -53,7 +53,7 @@ export default function FloatingHearts({ active = false, count = 15 }) {
               ease: "easeOut",
             }}
           >
-            <HEART_SVG size={h.size} color={h.color} />
+            <HeartSVG size={h.size} color={h.color} />
           </motion.div>
         ))}
       </AnimatePresence>
