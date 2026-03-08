@@ -63,12 +63,12 @@ export default function ReferralCard({ user }) {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
-            { label: "Referrals", value: referrals.length, icon: Users },
-            { label: "Pending", value: pending, icon: Sparkles },
-            { label: "Earned", value: `£${totalCredit}`, icon: Gift },
-          ].map(({ label, value, icon: Icon }) => (
+            { label: "Referrals", value: referrals.length, IconComp: Users },
+            { label: "Pending", value: pending, IconComp: Sparkles },
+            { label: "Earned", value: `£${totalCredit}`, IconComp: Gift },
+          ].map(({ label, value, IconComp }) => (
             <div key={label} className="bg-white/10 rounded-xl p-3 text-center backdrop-blur-sm border border-white/10">
-              <Icon className="w-4 h-4 text-amber-300 mx-auto mb-1" />
+              <IconComp className="w-4 h-4 text-amber-300 mx-auto mb-1" />
               <p className="text-xl font-bold">{value}</p>
               <p className="text-xs text-purple-200">{label}</p>
             </div>
