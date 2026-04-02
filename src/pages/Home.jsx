@@ -8,6 +8,7 @@ import TestimonialCarousel from "../components/TestimonialCarousel";
 import AffiliateOffers from "../components/AffiliateOffers";
 import AdSenseUnit from "../components/AdSenseUnit";
 import SparkleParticles from "../components/SparkleParticles";
+import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
 
 const OCCASIONS = [
   { emoji: "🎂", label: "Birthday", key: "birthday" },
@@ -75,6 +76,9 @@ export default function Home() {
                 </Button>
               </Link>
             </div>
+
+            {/* Upcoming occasion banner */}
+            <UpcomingOccasionBanner />
 
             {/* Social proof stars */}
             <div className="flex items-center justify-center gap-1 mt-6">
