@@ -34,7 +34,7 @@ export default function Home() {
         <DarkSparkle active />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80')] bg-cover bg-center opacity-10" />
         
-        <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-32">
+        <div className="relative max-w-6xl mx-auto px-4 py-12 md:py-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -77,12 +77,12 @@ export default function Home() {
             </div>
 
             {/* Occasions Calendar */}
-            <div className="mt-14 max-w-2xl mx-auto w-full">
+            <div className="mt-8 max-w-sm mx-auto w-full">
               <OccasionsCalendar />
             </div>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap justify-center gap-6 mt-12">
+            <div className="flex flex-wrap justify-center gap-6 mt-8">
               {TRUST_BADGES.map((badge, i) => (
                 <motion.div
                   key={i}
@@ -108,23 +108,23 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-12 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10"
           >
-            <h2 className="font-serif text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-3">
               How the Magic Works
             </h2>
-            <p className="text-gray-500 text-lg max-w-xl mx-auto">
+            <p className="text-gray-500 max-w-xl mx-auto">
               Four simple steps to the most unforgettable gift they'll ever receive.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-6">
             {HOW_IT_WORKS.map((step, i) => (
               <motion.div
                 key={i}
@@ -144,13 +144,13 @@ export default function Home() {
       </section>
 
       {/* Social Proof */}
-      <section className="py-20 px-4 gradient-soft">
+      <section className="py-12 px-4 gradient-soft">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8"
           >
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Loved by Gift-Givers Everywhere
@@ -161,12 +161,12 @@ export default function Home() {
       </section>
 
       {/* Occasion Showcase */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-12 px-4 bg-white">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             A Book for Every Occasion
           </h2>
-          <p className="text-gray-500 mb-12 max-w-xl mx-auto">
+          <p className="text-gray-500 mb-8 max-w-xl mx-auto">
             From heartfelt to hilarious, we've got the perfect book for any moment worth celebrating.
           </p>
 
@@ -196,7 +196,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-[#2D1B4E] to-[#4A2D7A] text-white overflow-hidden">
+      <section className="relative py-12 px-4 bg-gradient-to-br from-[#2D1B4E] to-[#4A2D7A] text-white overflow-hidden">
         <SparkleParticles active count={15} />
         <div className="relative max-w-3xl mx-auto text-center">
           <Heart className="w-12 h-12 text-amber-400 mx-auto mb-6" />
@@ -215,7 +215,7 @@ export default function Home() {
       </section>
 
       {/* Affiliate + AdSense strip */}
-      <section className="py-10 px-4 bg-white border-t border-gray-100">
+      <section className="py-8 px-4 bg-white border-t border-gray-100">
         <div className="max-w-4xl mx-auto space-y-5">
           <AffiliateOffers title="Pair Your Book With the Perfect Gift 🎁" />
           <AdSenseUnit />
@@ -223,7 +223,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12 px-4">
+      <footer className="bg-gray-900 text-gray-400 py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
