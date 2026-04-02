@@ -61,7 +61,7 @@ export default function Checkout() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [email, setEmail] = useState("");
   const [expressMethod, setExpressMethod] = useState(null);
-  const [stripeMode] = useState("test"); // toggled by admin via env
+  const [stripeMode] = useState("live");
   const [shippingAddress, setShippingAddress] = useState({
     name: "", line1: "", line2: "", city: "", postcode: "",
   });

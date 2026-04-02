@@ -162,6 +162,9 @@ export default function AdminDashboard() {
               <span className="ml-2 text-sm font-normal text-gray-400">Admin</span>
             </h1>
           </div>
+          <a href="/LaunchChecklist" className="text-xs font-medium text-purple-600 border border-purple-200 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1.5">
+            🚀 Launch Checklist
+          </a>
           <Button
             variant="outline"
             size="sm"
