@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import TestimonialCarousel from "../components/TestimonialCarousel";
 import SparkleParticles from "../components/SparkleParticles";
 import DarkSparkle from "../components/DarkSparkle";
+import OccasionsCalendar from "../components/OccasionsCalendar";
 
 const TRUST_BADGES = [
   { icon: Shield, label: "GDPR Compliant" },
@@ -71,6 +72,11 @@ export default function Home() {
                   <Shuffle className="w-4 h-4 mr-2" /> Surprise Me ✨
                 </Button>
               </Link>
+            </div>
+
+            {/* Occasions Calendar */}
+            <div className="mt-14 max-w-2xl mx-auto w-full">
+              <OccasionsCalendar />
             </div>
 
             {/* Trust Badges */}
@@ -213,6 +219,9 @@ export default function Home() {
             <div>
               <h3 className="font-serif text-xl text-white mb-3">GiftMyBook<span className="text-amber-400">UK</span></h3>
               <p className="text-sm">The UK's favourite AI-powered personalised gift book creator.</p>
+              <Link to={createPageUrl("ProductGallery")} className="inline-block mt-3 text-amber-400 hover:text-amber-300 text-sm font-medium">
+                📸 Customer Gallery
+              </Link>
             </div>
             <div>
               <h4 className="text-white font-semibold text-sm mb-3">Create</h4>

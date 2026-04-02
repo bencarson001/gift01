@@ -1,0 +1,65 @@
+{
+  "name": "ProductGallery",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string"
+    },
+    "book_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "book_title": {
+      "type": "string"
+    },
+    "occasion": {
+      "type": "string"
+    },
+    "recipient_name": {
+      "type": "string"
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "1-3 uploaded photo URLs"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Customer's comment about the book"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending_review"
+    },
+    "ai_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether AI image recognition confirmed it looks like a book"
+    },
+    "discount_code": {
+      "type": "string",
+      "description": "5% off coupon code issued as reward"
+    },
+    "discount_expires": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "discount_used": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "order_id",
+    "user_email"
+  ]
+}

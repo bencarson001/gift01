@@ -80,8 +80,14 @@ export default function MyLibrary() {
             GiftMyBook<span className="text-amber-500">UK</span>
           </Link>
           <div className="flex items-center gap-3">
+            <Link to={createPageUrl("ProductGallery")} className="text-sm text-purple-600 hover:text-purple-800 font-medium hidden sm:block">
+              📸 Gallery
+            </Link>
+            <Link to={createPageUrl("UserProfile")} className="text-sm text-purple-600 hover:text-purple-800 font-medium hidden sm:block">
+              👤 Profile
+            </Link>
             <Link to={createPageUrl("Referrals")} className="text-sm text-purple-600 hover:text-purple-800 font-medium hidden sm:block">
-              🎁 Earn £5
+              🎁 Earn £1
             </Link>
             <Link to={createPageUrl("CreateBook")}>
               <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl shadow-md shadow-purple-200">

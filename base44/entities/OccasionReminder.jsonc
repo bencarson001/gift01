@@ -1,0 +1,65 @@
+{
+  "name": "OccasionReminder",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who owns this reminder"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the occasion (e.g. Mom's Birthday)"
+    },
+    "occasion_type": {
+      "type": "string",
+      "enum": [
+        "birthday",
+        "anniversary",
+        "wedding",
+        "christening",
+        "graduation",
+        "christmas",
+        "easter",
+        "valentines",
+        "mothers_day",
+        "fathers_day",
+        "halloween",
+        "new_year",
+        "other"
+      ],
+      "default": "birthday"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the occasion (YYYY-MM-DD)"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "Name of the recipient"
+    },
+    "email_alert_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "alert_days_before": {
+      "type": "number",
+      "default": 7,
+      "description": "Days before to send alert"
+    },
+    "reminder_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "reminder_sent_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_email",
+    "name",
+    "date",
+    "recipient_name"
+  ]
+}
