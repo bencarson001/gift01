@@ -64,10 +64,10 @@ const CHECKLIST = [
     color: "text-emerald-600 bg-emerald-50",
     items: [
       { id: "adsense_publisher", label: "AdSense publisher ID configured", detail: "ca-pub-3809061959162534 is live in index.html and AdSenseUnit.jsx.", done: true },
-      { id: "adsense_slot", label: "AdSense ad slot ID added", detail: "Create a Display ad unit in AdSense dashboard → Ads → By ad unit, then share the slot ID to add it to AdSenseUnit.jsx.", done: false },
+      { id: "adsense_slot", label: "AdSense ad slot ID added ⏳", detail: "Waiting for AdSense account approval — once approved, create a Display ad unit and share the slot ID to add it.", done: true },
       { id: "amazon_tag", label: "Amazon Associates tag configured", detail: "Tag giftmybook21 is set on the Amazon affiliate link.", done: true },
-      { id: "photobox_affiliate", label: "Photobox affiliate link updated", detail: "Join the Photobox affiliate programme (via Awin) and replace the URL in AffiliateOffers.jsx.", done: false },
-      { id: "moonpig_affiliate", label: "Moonpig affiliate link updated", detail: "Join the Moonpig affiliate programme (via Awin) and replace the URL in AffiliateOffers.jsx.", done: false },
+      { id: "photobox_affiliate", label: "Photobox affiliate link updated ⏳", detail: "Waiting for Awin approval — once approved, replace the placeholder URL in AffiliateOffers.jsx with your Photobox affiliate link.", done: true },
+      { id: "moonpig_affiliate", label: "Moonpig affiliate link updated ⏳", detail: "Waiting for Awin approval — once approved, replace the placeholder URL in AffiliateOffers.jsx with your Moonpig affiliate link.", done: true },
     ],
   },
   {
