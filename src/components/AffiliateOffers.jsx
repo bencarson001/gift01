@@ -38,7 +38,7 @@ const OFFERS = [
     textColor: "text-amber-800",
     ctaColor: "text-amber-600 hover:text-amber-800",
     // Replace with your Amazon Associates link
-    href: "https://www.amazon.co.uk/gifts?tag=goftmybook21",
+    href: "https://www.amazon.co.uk/gifts?tag=giftmybook21",
   },
 ];
 
