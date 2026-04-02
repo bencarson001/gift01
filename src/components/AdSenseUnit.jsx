@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 
 // Replace YOUR_PUBLISHER_ID with your real AdSense publisher ID (ca-pub-XXXXXXXXXXXXXXXX)
 // Replace YOUR_AD_SLOT with your real ad slot ID
-const PUBLISHER_ID = "ca-pub-XXXXXXXXXXXXXXXX";
+const PUBLISHER_ID = "ca-pub-3809061959162534";
 const AD_SLOT = "XXXXXXXXXX";
 const AD_ENABLED = PUBLISHER_ID !== "ca-pub-XXXXXXXXXXXXXXXX";
 
