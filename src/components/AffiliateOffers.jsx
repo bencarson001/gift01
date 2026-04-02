@@ -14,7 +14,7 @@ const OFFERS = [
     textColor: "text-orange-800",
     ctaColor: "text-orange-600 hover:text-orange-800",
     // Replace with your Photobox affiliate link
-    href: "https://www.photobox.co.uk/?utm_source=giftmybookuk&utm_medium=affiliate",
+    href: "https://www.photobox.co.uk/",
   },
   {
     name: "Moonpig",
@@ -38,7 +38,7 @@ const OFFERS = [
     textColor: "text-amber-800",
     ctaColor: "text-amber-600 hover:text-amber-800",
     // Replace with your Amazon Associates link
-    href: "https://www.amazon.co.uk/gifts?tag=YOURTAG-21",
+    href: "https://www.amazon.co.uk/gifts?tag=goftmybook21",
   },
 ];
 
