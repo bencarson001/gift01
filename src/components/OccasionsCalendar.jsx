@@ -11,7 +11,7 @@ const PUBLIC_OCCASIONS = {
   "02-14": { label: "Valentine's Day", emoji: "❤️", occasion: "valentines" },
   "03-17": { label: "St Patrick's Day", emoji: "🍀", occasion: "friendship" },
   "03-30": { label: "Easter Sunday 2025", emoji: "🐣", occasion: "birthday" },
-  "04-20": { label: "Easter Sunday 2026", emoji: "🐣", occasion: "birthday" },
+  "04-05": { label: "Easter Sunday 2026", emoji: "🐣", occasion: "birthday" },
   "05-11": { label: "Mother's Day", emoji: "🌷", occasion: "mothers_day" },
   "06-15": { label: "Father's Day", emoji: "⚽", occasion: "fathers_day" },
   "10-31": { label: "Halloween", emoji: "🎃", occasion: "roast" },
@@ -167,18 +167,21 @@ export default function OccasionsCalendar() {
               <div
                 key={d}
                 onClick={occ ? () => navigate(createPageUrl("CreateBook") + `?occasion=${occ.occasion}`) : undefined}
-                className={`aspect-square flex flex-col items-center justify-center text-xs relative
-                  ${occ ? "cursor-pointer hover:bg-white/20 transition-colors" : ""}
+                className={`flex flex-col items-center justify-start text-xs relative py-1 px-0.5 min-h-[52px]
+                  ${occ ? "cursor-pointer hover:bg-white/20 transition-colors rounded-xl" : ""}
                   ${todayFlag ? "bg-amber-400/20 rounded-xl" : ""}
                 `}
               >
-                <span className={`font-medium ${todayFlag ? "text-amber-300" : "text-white/80"} ${occ ? "text-white" : ""}`}>
+                <span className={`font-medium ${todayFlag ? "text-amber-300" : "text-white/80"} ${occ ? "text-white font-bold" : ""}`}>
                   {d}
                 </span>
                 {occ && (
-                  <span className="text-lg leading-none mt-0.5" title={occ.label}>
-                    {occ.emoji}
-                  </span>
+                  <div className="flex flex-col items-center mt-0.5">
+                    <span className="text-base leading-none">{occ.emoji}</span>
+                    <span className="text-white/90 font-medium text-center leading-tight mt-0.5" style={{ fontSize: "9px" }}>
+                      {occ.label}
+                    </span>
+                  </div>
                 )}
               </div>
             );
