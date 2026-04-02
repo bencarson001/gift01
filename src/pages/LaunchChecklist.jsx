@@ -59,6 +59,18 @@ const CHECKLIST = [
     ],
   },
   {
+    section: "Monetisation",
+    icon: Bell,
+    color: "text-emerald-600 bg-emerald-50",
+    items: [
+      { id: "adsense_publisher", label: "AdSense publisher ID configured", detail: "ca-pub-3809061959162534 is live in index.html and AdSenseUnit.jsx.", done: true },
+      { id: "adsense_slot", label: "AdSense ad slot ID added", detail: "Create a Display ad unit in AdSense dashboard → Ads → By ad unit, then share the slot ID to add it to AdSenseUnit.jsx.", done: false },
+      { id: "amazon_tag", label: "Amazon Associates tag configured", detail: "Tag giftmybook21 is set on the Amazon affiliate link.", done: true },
+      { id: "photobox_affiliate", label: "Photobox affiliate link updated", detail: "Join the Photobox affiliate programme (via Awin) and replace the URL in AffiliateOffers.jsx.", done: false },
+      { id: "moonpig_affiliate", label: "Moonpig affiliate link updated", detail: "Join the Moonpig affiliate programme (via Awin) and replace the URL in AffiliateOffers.jsx.", done: false },
+    ],
+  },
+  {
     section: "Gallery & Social Proof",
     icon: Image,
     color: "text-pink-600 bg-pink-50",
