@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import FlipbookPreview from "../components/FlipbookPreview";
 import SparkleParticles from "../components/SparkleParticles";
 import FloatingHearts from "../components/FloatingHearts";
+import VoiceoverPanel from "../components/VoiceoverPanel";
 
 export default function BookPreview() {
   const navigate = useNavigate();
@@ -157,6 +158,16 @@ Return the full updated pages array.`,
             </motion.div>
           )}
         </div>
+
+        {/* Voiceover Panel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <VoiceoverPanel book={book} />
+        </motion.div>
 
         {/* Purchase CTA */}
         <motion.div

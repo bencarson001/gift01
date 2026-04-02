@@ -19,8 +19,9 @@ const OCCASIONS = [
 
 export default function CreateBook() {
   const navigate = useNavigate();
-  const [step, setStep] = useState("occasion"); // occasion | questions | generating
-  const [selectedOccasion, setSelectedOccasion] = useState(null);
+  const surpriseOccasion = new URLSearchParams(window.location.search).get("occasion");
+  const [step, setStep] = useState(surpriseOccasion ? "questions" : "occasion");
+  const [selectedOccasion, setSelectedOccasion] = useState(surpriseOccasion || null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isGenerating, setIsGenerating] = useState(false);

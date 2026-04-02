@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { BookOpen, Sparkles, Truck, Heart, Shield, Clock, Award, ArrowRight } from "lucide-react";
+import { BookOpen, Sparkles, Truck, Heart, Shield, Clock, Award, ArrowRight, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TestimonialCarousel from "../components/TestimonialCarousel";
 import SparkleParticles from "../components/SparkleParticles";
@@ -66,9 +66,11 @@ export default function Home() {
                   Create Your Book — From £9.99
                 </Button>
               </Link>
-              <Button variant="outline" className="h-14 px-8 text-lg border-white/30 text-white hover:bg-white/10 rounded-2xl bg-transparent">
-                See Examples
-              </Button>
+              <Link to={createPageUrl("CreateBook") + `?occasion=${["birthday","roast","anniversary","kids_adventure","couples_love_story","graduation","valentines","retirement","friendship","pet_tribute"][Math.floor(Math.random()*10)]}`}>
+                <Button variant="outline" className="h-14 px-8 text-lg border-white/30 text-white hover:bg-white/10 rounded-2xl bg-transparent">
+                  <Shuffle className="w-4 h-4 mr-2" /> Surprise Me ✨
+                </Button>
+              </Link>
             </div>
 
             {/* Trust Badges */}

@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ZoomIn, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BookQRPage from "./BookQRPage";
 
 export default function FlipbookPreview({ book, onRefine, onShare }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(1);
 
   const pages = book?.pages_content || [];
-  const totalPages = pages.length;
+  // Add a virtual QR page at the end (only if book has a share_id)
+  const hasQRPage = !!book?.share_id;
+  const totalPages = pages.length + (hasQRPage ? 1 : 0);
 
   const goToPage = (newPage) => {
     if (newPage < 0 || newPage >= totalPages) return;
@@ -22,6 +25,7 @@ export default function FlipbookPreview({ book, onRefine, onShare }) {
     exit: (dir) => ({ x: dir > 0 ? -300 : 300, opacity: 0, rotateY: dir > 0 ? -30 : 30 }),
   };
 
+  const isQRPage = hasQRPage && currentPage === totalPages - 1;
   const currentPageData = pages[currentPage];
 
   return (
@@ -33,7 +37,20 @@ export default function FlipbookPreview({ book, onRefine, onShare }) {
         {/* Page display */}
         <div className="relative aspect-[3/4] bg-gradient-to-br from-cream to-amber-50 overflow-hidden" style={{ backgroundColor: "#FFF8F0" }}>
           <AnimatePresence mode="wait" custom={direction}>
-            {currentPageData ? (
+            {isQRPage ? (
+              <motion.div
+                key="qr-page"
+                custom={direction}
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.5, ease: [0.645, 0.045, 0.355, 1] }}
+                className="absolute inset-0"
+              >
+                <BookQRPage book={book} />
+              </motion.div>
+            ) : currentPageData ? (
               <motion.div
                 key={currentPage}
                 custom={direction}
