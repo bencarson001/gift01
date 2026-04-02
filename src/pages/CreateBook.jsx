@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, ArrowRight, Wand2, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OccasionCard from "../components/OccasionCard";
 import WizardQuestion from "../components/WizardQuestion";
-import SparkleParticles from "../components/SparkleParticles";
+import BookOpeningLoader from "../components/BookOpeningLoader";
 import { getQuestionsForOccasion } from "../components/wizard/WizardQuestions";
 
 const OCCASIONS = [
@@ -24,7 +24,6 @@ export default function CreateBook() {
   const [selectedOccasion, setSelectedOccasion] = useState(surpriseOccasion || null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const questions = selectedOccasion ? getQuestionsForOccasion(selectedOccasion) : [];
 
@@ -56,7 +55,6 @@ export default function CreateBook() {
 
   const generateBook = useCallback(async () => {
     setStep("generating");
-    setIsGenerating(true);
 
     const recipientName = answers.recipient_name || "Someone Special";
     const senderName = answers.sender_name || "A friend";
@@ -107,25 +105,21 @@ Return a JSON object with:
       },
     });
 
-    // Generate cover image
+    // Generate cover + all illustrations in parallel for maximum speed
     const coverPrompt = `Beautiful ${artStyle} style book cover illustration for a personalised gift book titled "${storyResult.title}". 
 For ${recipientName}, occasion: ${selectedOccasion.replace(/_/g, " ")}. 
 Elegant, premium, magical feel with warm colours. No text in the image.`;
 
-    const coverImage = await base44.integrations.Core.GenerateImage({
-      prompt: coverPrompt,
-    });
-
-    // Generate 4 key interior illustrations
-    const illustrationPromises = [0, 4, 9, 14].map((i) => {
-      const page = storyResult.pages[i];
-      if (!page) return Promise.resolve(null);
-      return base44.integrations.Core.GenerateImage({
-        prompt: `${artStyle} style illustration: ${page.image_prompt}. Warm, magical, premium quality.`,
-      });
-    });
-
-    const illustrations = await Promise.all(illustrationPromises);
+    const [coverImage, ...illustrations] = await Promise.all([
+      base44.integrations.Core.GenerateImage({ prompt: coverPrompt }),
+      ...[0, 4, 9, 14].map((i) => {
+        const page = storyResult.pages[i];
+        if (!page) return Promise.resolve(null);
+        return base44.integrations.Core.GenerateImage({
+          prompt: `${artStyle} style illustration: ${page.image_prompt}. Warm, magical, premium quality.`,
+        });
+      }),
+    ]);
 
     // Build pages content
     const pagesContent = storyResult.pages.map((page, i) => {
@@ -156,7 +150,6 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
       total_pages: pagesContent.length,
     });
 
-    setIsGenerating(false);
     navigate(createPageUrl("BookPreview") + `?id=${book.id}`);
   }, [answers, selectedOccasion, navigate]);
 
@@ -281,39 +274,8 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
               key="generating"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-20"
             >
-              <div className="relative inline-block">
-                <SparkleParticles active count={25} />
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="w-20 h-20 mx-auto mb-8"
-                >
-                  <div className="w-full h-full rounded-full border-4 border-purple-200 border-t-amber-400" />
-                </motion.div>
-              </div>
-
-              <h2 className="font-serif text-3xl font-bold text-gray-900 mb-3">
-                Creating Your Magic ✨
-              </h2>
-              <p className="text-gray-500 text-lg mb-2">
-                Our AI is crafting a one-of-a-kind book for {answers.recipient_name || "someone special"}...
-              </p>
-              <div className="max-w-sm mx-auto mt-8 space-y-3">
-                {["Writing your story", "Creating illustrations", "Designing the layout"].map((text, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 2 }}
-                    className="flex items-center gap-3 text-sm text-gray-600"
-                  >
-                    <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
-                    {text}...
-                  </motion.div>
-                ))}
-              </div>
+              <BookOpeningLoader recipientName={answers.recipient_name} />
             </motion.div>
           )}
         </AnimatePresence>
