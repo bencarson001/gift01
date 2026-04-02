@@ -6,6 +6,8 @@ import { base44 } from "@/api/base44Client";
 import { BookOpen, Download, Truck, Share2, Star, Gift, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SparkleParticles from "../components/SparkleParticles";
+import AffiliateOffers from "../components/AffiliateOffers";
+import AdSenseUnit from "../components/AdSenseUnit";
 
 // Big confetti burst using pure CSS + framer-motion
 const CONFETTI_COLORS = ["#D4A853", "#E8A0BF", "#7B5EA7", "#4ECDC4", "#FF6B6B", "#F0D88A", "#4A2D7A", "#FF9F43"];
@@ -281,11 +283,31 @@ export default function OrderSuccess() {
           </div>
         </motion.div>
 
+        {/* Affiliate offers */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1 }}
+          className="mt-6"
+        >
+          <AffiliateOffers />
+        </motion.div>
+
+        {/* AdSense */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.3 }}
+          className="mt-4"
+        >
+          <AdSenseUnit />
+        </motion.div>
+
         {/* Bottom brand */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 1.4 }}
           className="text-center text-xs text-gray-400 mt-5"
         >
           With love, GiftMyBook<span className="text-amber-500">UK</span> 📖✨

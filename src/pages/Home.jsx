@@ -5,6 +5,8 @@ import { createPageUrl } from "@/utils";
 import { BookOpen, Sparkles, Truck, Heart, Shield, Clock, Award, ArrowRight, Shuffle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TestimonialCarousel from "../components/TestimonialCarousel";
+import AffiliateOffers from "../components/AffiliateOffers";
+import AdSenseUnit from "../components/AdSenseUnit";
 import SparkleParticles from "../components/SparkleParticles";
 import DarkSparkle from "../components/DarkSparkle";
 import OccasionsCalendar from "../components/OccasionsCalendar";
@@ -209,6 +211,14 @@ export default function Home() {
               Create Your Book Now ✨
             </Button>
           </Link>
+        </div>
+      </section>
+
+      {/* Affiliate + AdSense strip */}
+      <section className="py-10 px-4 bg-white border-t border-gray-100">
+        <div className="max-w-4xl mx-auto space-y-5">
+          <AffiliateOffers title="Pair Your Book With the Perfect Gift 🎁" />
+          <AdSenseUnit />
         </div>
       </section>
 
