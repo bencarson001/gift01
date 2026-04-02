@@ -1,0 +1,36 @@
+{
+  "name": "Referral",
+  "type": "object",
+  "properties": {
+    "referrer_email": {
+      "type": "string"
+    },
+    "referred_email": {
+      "type": "string"
+    },
+    "referral_code": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "credited",
+        "spent"
+      ],
+      "default": "pending"
+    },
+    "credit_amount_gbp": {
+      "type": "number",
+      "default": 1
+    },
+    "credited_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "referrer_email",
+    "referral_code"
+  ]
+}

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Gift, Users, Copy, Check, ArrowLeft, Clock, CheckCircle, TrendingUp } from "lucide-react";
+import { Gift, Users, Copy, Check, ArrowLeft, Clock, CheckCircle, TrendingUp, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -34,8 +34,10 @@ export default function Referrals() {
   });
 
   const credited = referrals.filter((r) => r.status === "credited");
+  const spent = referrals.filter((r) => r.status === "spent");
   const pending = referrals.filter((r) => r.status === "pending");
-  const totalEarned = credited.length * 5;
+  const totalEarned = (credited.length + spent.length) * 1;
+  const availableCoupons = credited.length;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -53,7 +55,7 @@ export default function Referrals() {
       referred_email: friendEmail,
       referral_code: referralCode,
       status: "pending",
-      credit_amount_gbp: 5,
+      credit_amount_gbp: 1,
     });
 
     // Send invite email
@@ -110,19 +112,25 @@ export default function Referrals() {
           <SparkleParticles active count={12} />
           <div className="relative z-10">
             <div className="text-5xl mb-4">🎁</div>
-            <h2 className="font-serif text-3xl font-bold mb-3">Earn £5 per friend</h2>
+            <h2 className="font-serif text-3xl font-bold mb-3">Earn £1 per friend</h2>
             <p className="text-purple-200 text-base max-w-md mx-auto">
-              Share your unique link. When a friend makes their first purchase, you both get £5 credit automatically.
+              Share your unique link. When a friend makes their first purchase, you earn a £1 coupon automatically — coupons stack, so refer 5 friends and save £5!
             </p>
+            {availableCoupons > 0 && (
+              <div className="mt-4 inline-flex items-center gap-2 bg-amber-400/20 border border-amber-400/40 rounded-full px-4 py-2">
+                <span className="text-amber-300 font-bold">🎟 {availableCoupons} coupon{availableCoupons > 1 ? "s" : ""} available — worth £{availableCoupons}</span>
+              </div>
+            )}
           </div>
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           {[
-            { icon: Users, label: "Total Referrals", value: referrals.length, color: "text-purple-600 bg-purple-50" },
+            { icon: Users, label: "Referrals", value: referrals.length, color: "text-purple-600 bg-purple-50" },
             { icon: Clock, label: "Pending", value: pending.length, color: "text-amber-600 bg-amber-50" },
             { icon: TrendingUp, label: "Total Earned", value: `£${totalEarned}`, color: "text-green-600 bg-green-50" },
+            { icon: Gift, label: "Available", value: `£${availableCoupons}`, color: "text-amber-600 bg-amber-50" },
           ].map((s) => (
             <motion.div
               key={s.label}
@@ -208,10 +216,10 @@ export default function Referrals() {
                   </div>
                   <Badge className={
                     r.status === "credited" ? "bg-green-100 text-green-700 border-green-200" :
-                    r.status === "completed" ? "bg-blue-100 text-blue-700 border-blue-200" :
+                    r.status === "spent" ? "bg-purple-100 text-purple-700 border-purple-200" :
                     "bg-gray-100 text-gray-600 border-gray-200"
                   }>
-                    {r.status === "credited" ? `+£${r.credit_amount_gbp}` : r.status}
+                    {r.status === "credited" ? `🎟 +£1 available` : r.status === "spent" ? "✓ used" : "pending"}
                   </Badge>
                 </div>
               ))}

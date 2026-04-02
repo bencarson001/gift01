@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -6,7 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft, Loader2, CreditCard, Truck, Download, Star,
-  Shield, Lock, CheckCircle, Info
+  Shield, Lock, CheckCircle, Info, Gift
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +65,19 @@ export default function Checkout() {
   const [shippingAddress, setShippingAddress] = useState({
     name: "", line1: "", line2: "", city: "", postcode: "",
   });
+  const [user, setUser] = React.useState(null);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+  const [couponsToUse, setCouponsToUse] = useState(0);
+
+  useEffect(() => {
+    base44.auth.me().then(async (me) => {
+      setUser(me);
+      if (me?.email) {
+        const credited = await base44.entities.Referral.filter({ referrer_email: me.email, status: "credited" });
+        setAvailableCoupons(credited.length);
+      }
+    }).catch(() => {});
+  }, []);
 
   const { data: book } = useQuery({
     queryKey: ["book", bookId],
@@ -76,6 +89,8 @@ export default function Checkout() {
   const plan = PLAN_DETAILS[planType] || PLAN_DETAILS.digital;
   const PlanIcon = plan.icon;
   const subtotal = plan.price - plan.vat;
+  const couponDiscount = Math.min(couponsToUse, availableCoupons);
+  const finalPrice = Math.max(0, plan.price - couponDiscount);
 
   const isFormValid = () => {
     if (!email) return false;
@@ -89,11 +104,18 @@ export default function Checkout() {
     if (!isFormValid()) return;
     setIsProcessing(true);
 
+    // Mark used coupons as spent
+    if (couponDiscount > 0 && user?.email) {
+      const creditedReferrals = await base44.entities.Referral.filter({ referrer_email: user.email, status: "credited" });
+      const toSpend = creditedReferrals.slice(0, couponDiscount);
+      await Promise.all(toSpend.map((r) => base44.entities.Referral.update(r.id, { status: "spent" })));
+    }
+
     // Create order record
     await base44.entities.Order.create({
       book_id: bookId,
       product_type: planType,
-      price_gbp: plan.price,
+      price_gbp: finalPrice,
       vat_amount: plan.vat,
       status: "paid",
       recipient_email: email,
@@ -294,7 +316,7 @@ export default function Checkout() {
                 {isProcessing ? (
                   <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Processing payment...</>
                 ) : (
-                  <><Lock className="w-4 h-4 mr-2" /> Pay £{plan.price.toFixed(2)} now</>
+                  <><Lock className="w-4 h-4 mr-2" /> Pay £{finalPrice.toFixed(2)} now{couponDiscount > 0 ? ` (saved £${couponDiscount})` : ""}</>
                 )}
               </Button>
               <div className="flex items-center justify-center gap-4 mt-3 text-xs text-gray-400">
@@ -373,9 +395,46 @@ export default function Checkout() {
                         <span>FREE</span>
                       </div>
                     )}
+
+                    {/* Referral coupons */}
+                    {availableCoupons > 0 && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Gift className="w-4 h-4 text-amber-600 shrink-0" />
+                          <p className="text-xs font-semibold text-amber-800">
+                            You have {availableCoupons} referral coupon{availableCoupons > 1 ? "s" : ""} (£{availableCoupons} total)
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-amber-700">Apply:</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => setCouponsToUse(Math.max(0, couponsToUse - 1))}
+                              className="w-6 h-6 rounded-full bg-amber-200 text-amber-800 font-bold text-sm flex items-center justify-center hover:bg-amber-300"
+                            >−</button>
+                            <span className="text-sm font-bold text-amber-900 w-6 text-center">{couponsToUse}</span>
+                            <button
+                              onClick={() => setCouponsToUse(Math.min(availableCoupons, couponsToUse + 1))}
+                              className="w-6 h-6 rounded-full bg-amber-200 text-amber-800 font-bold text-sm flex items-center justify-center hover:bg-amber-300"
+                            >+</button>
+                          </div>
+                          <span className="text-xs text-amber-700 ml-auto">
+                            {couponsToUse > 0 ? `−£${couponsToUse} off` : "none applied"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {couponDiscount > 0 && (
+                      <div className="flex justify-between text-green-600 font-medium">
+                        <span>Referral coupons ({couponDiscount}×£1)</span>
+                        <span>−£{couponDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between font-bold text-gray-900 text-base pt-2 border-t border-gray-100">
                       <span>Total{planType === "subscription" ? "/month" : ""}</span>
-                      <span>£{plan.price.toFixed(2)}</span>
+                      <span>£{finalPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

@@ -21,8 +21,9 @@ export default function ReferralCard({ user }) {
   });
 
   const credited = referrals.filter((r) => r.status === "credited").length;
+  const spent = referrals.filter((r) => r.status === "spent").length;
   const pending = referrals.filter((r) => r.status === "pending").length;
-  const totalCredit = credited * 5;
+  const totalCredit = credited + spent; // total £1 coupons ever earned
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -55,8 +56,8 @@ export default function ReferralCard({ user }) {
             <Gift className="w-5 h-5 text-amber-400" />
           </div>
           <div>
-            <h3 className="font-serif text-lg font-bold">Refer Friends, Earn £5</h3>
-            <p className="text-purple-200 text-xs">For every friend who purchases</p>
+            <h3 className="font-serif text-lg font-bold">Refer Friends, Earn £1</h3>
+            <p className="text-purple-200 text-xs">Per friend who purchases — coupons stack!</p>
           </div>
         </div>
 
@@ -64,7 +65,7 @@ export default function ReferralCard({ user }) {
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
             { label: "Referrals", value: referrals.length, IconComp: Users },
-            { label: "Pending", value: pending, IconComp: Sparkles },
+            { label: "Available", value: `£${credited}`, IconComp: Sparkles },
             { label: "Earned", value: `£${totalCredit}`, IconComp: Gift },
           ].map(({ label, value, IconComp }) => (
             <div key={label} className="bg-white/10 rounded-xl p-3 text-center backdrop-blur-sm border border-white/10">

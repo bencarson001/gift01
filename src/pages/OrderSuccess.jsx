@@ -98,7 +98,20 @@ export default function OrderSuccess() {
 
   useEffect(() => {
     if (bookId) base44.entities.Book.filter({ id: bookId }).then((d) => d?.[0] && setBook(d[0]));
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(async (me) => {
+      setUser(me);
+      // Credit the referrer £1 if this user was referred and hasn't been credited yet
+      if (me?.email) {
+        const referrals = await base44.entities.Referral.filter({ referred_email: me.email, status: "pending" });
+        for (const referral of referrals) {
+          await base44.entities.Referral.update(referral.id, {
+            status: "credited",
+            credit_amount_gbp: 1,
+            credited_at: new Date().toISOString(),
+          });
+        }
+      }
+    }).catch(() => {});
     const t = setTimeout(() => setConfettiActive(false), 6000);
     return () => clearTimeout(t);
   }, [bookId]);
