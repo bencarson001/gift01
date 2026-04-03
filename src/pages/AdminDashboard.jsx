@@ -7,12 +7,13 @@ import {
 } from "recharts";
 import {
   PoundSterling, BookOpen, TrendingUp, ShoppingBag,
-  Lock, RefreshCw, Clock, Bell, MessageSquare, CheckCheck, BarChart2
+  Lock, RefreshCw, Clock, Bell, MessageSquare, CheckCheck, BarChart2, CreditCard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format, startOfDay, startOfMonth, isAfter } from "date-fns";
 import InsightsTab from "../components/admin/InsightsTab";
+import TestPurchaseTab from "../components/admin/TestPurchaseTab";
 
 const OCCASION_LABELS = {
   birthday: "🎂 Birthday", anniversary: "💍 Anniversary", baby: "👶 Baby",
@@ -28,7 +29,7 @@ const OCCASION_LABELS = {
 
 const PLAN_COLORS = { digital: "#7B5EA7", printed: "#D4A853", subscription: "#4ECDC4" };
 
-const TABS = ["Overview", "Feedback", "Insights"];
+const TABS = ["Overview", "Feedback", "Insights", "Test Purchase"];
 
 function StatCard({ icon: Icon, label, value, sub, color }) {
   return (
@@ -305,6 +306,7 @@ export default function AdminDashboard() {
             >
               {tab === "Feedback" && <MessageSquare className="w-3.5 h-3.5" />}
               {tab === "Insights" && <BarChart2 className="w-3.5 h-3.5" />}
+              {tab === "Test Purchase" && <CreditCard className="w-3.5 h-3.5" />}
               {tab}
               {tab === "Feedback" && unreadCount > 0 && (
                 <span className="bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none">
@@ -439,6 +441,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === "Insights" && <InsightsTab />}
+        {activeTab === "Test Purchase" && <TestPurchaseTab />}
       </div>
     </div>
   );

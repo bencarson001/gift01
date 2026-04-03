@@ -12,6 +12,7 @@ import FlipbookPreview from "../components/FlipbookPreview";
 import SparkleParticles from "../components/SparkleParticles";
 import FloatingHearts from "../components/FloatingHearts";
 import VoiceoverPanel from "../components/VoiceoverPanel";
+import BookRatingWidget, { AverageRatingBadge } from "../components/BookRatingWidget";
 
 export default function BookPreview() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function BookPreview() {
   const [refineInstructions, setRefineInstructions] = useState("");
   const [isRefining, setIsRefining] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showRating, setShowRating] = useState(false);
 
   const { data: book, isLoading } = useQuery({
     queryKey: ["book", bookId],
@@ -30,6 +32,14 @@ export default function BookPreview() {
     enabled: !!bookId,
     select: (data) => data[0],
   });
+
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["book-reviews", bookId],
+    queryFn: () => base44.entities.BookReview.filter({ book_id: bookId }),
+    enabled: !!bookId,
+  });
+
+  const averageRating = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
 
   const handleRefine = async () => {
     if (!refineInstructions.trim() || !book) return;
@@ -121,9 +131,14 @@ Return the full updated pages array.`,
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             {book.title}
           </h2>
-          <p className="text-gray-500">
+          <p className="text-gray-500 mb-2">
             A personalised book for <span className="text-purple-600 font-semibold">{book.recipient_name}</span>
           </p>
+          {reviews.length > 0 && (
+            <div className="flex justify-center">
+              <AverageRatingBadge averageRating={averageRating} totalReviews={reviews.length} />
+            </div>
+          )}
         </motion.div>
 
         {/* Cover Image */}
@@ -168,6 +183,27 @@ Return the full updated pages array.`,
         >
           <VoiceoverPanel book={book} />
         </motion.div>
+
+        {/* Rating widget — show for purchased books */}
+        {book.status === "purchased" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-8"
+          >
+            {!showRating ? (
+              <button
+                onClick={() => setShowRating(true)}
+                className="w-full text-center py-3 text-sm text-purple-600 hover:text-purple-800 font-medium border border-purple-100 rounded-2xl bg-purple-50 hover:bg-purple-100 transition-colors"
+              >
+                ⭐ Rate & review this book
+              </button>
+            ) : (
+              <BookRatingWidget book={book} onSubmitted={() => setShowRating(false)} />
+            )}
+          </motion.div>
+        )}
 
         {/* Purchase CTA */}
         <motion.div

@@ -34,6 +34,9 @@ Deno.serve(async (req) => {
       : null;
 
     const uploadUrl = `${Deno.env.get('VITE_APP_URL') || 'https://app.giftmybookuk.com'}/UserProfile`;
+    const reviewUrl = book?.id
+      ? `${Deno.env.get('VITE_APP_URL') || 'https://app.giftmybookuk.com'}/BookPreview?id=${book.id}`
+      : uploadUrl;
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: order.recipient_email,
@@ -56,6 +59,14 @@ Deno.serve(async (req) => {
             <p style="color: #9CA3AF; font-size: 12px; background: #F9FAFB; border-radius: 8px; padding: 12px;">
               📌 Upload window is open for 7 days. Sign in to your account and go to "Orders & Photos" tab.
             </p>
+            <div style="border-top: 1px solid #F3F4F6; margin: 24px 0 16px; padding-top: 20px;">
+              <p style="color: #374151; font-size: 14px; font-weight: bold; margin-bottom: 8px;">⭐ Love your book? Leave a quick review!</p>
+              <p style="color: #6B7280; font-size: 13px; margin-bottom: 16px;">It only takes 30 seconds and helps other gift-givers find us.</p>
+              <a href="${reviewUrl}"
+                 style="background: #4A2D7A; color: white; text-decoration: none; padding: 12px 28px; border-radius: 12px; font-size: 14px; font-weight: bold; display: inline-block;">
+                Rate My Book ⭐
+              </a>
+            </div>
             <p style="color: #9CA3AF; font-size: 12px; margin-top: 24px;">GiftMyBookUK · Made with ❤️ in the UK 🇬🇧</p>
           </div>
         </div>

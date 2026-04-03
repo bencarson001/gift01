@@ -4,7 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Plus, Eye, Download, Clock, Loader2, Repeat, Share2, Star } from "lucide-react";
+import { BookOpen, Plus, Eye, Download, Clock, Loader2, Repeat, Share2, Star, Truck } from "lucide-react";
+import { AverageRatingBadge } from "../components/BookRatingWidget";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -60,6 +61,11 @@ export default function MyLibrary() {
   const { data: books = [], isLoading } = useQuery({
     queryKey: ["my-books"],
     queryFn: () => base44.entities.Book.list("-created_date", 50),
+  });
+
+  const { data: allReviews = [] } = useQuery({
+    queryKey: ["my-book-reviews"],
+    queryFn: () => base44.entities.BookReview.list("-created_date", 200),
   });
 
   const handleRefresh = async () => {
@@ -238,16 +244,30 @@ export default function MyLibrary() {
                         <h3 className="font-serif text-base font-bold text-gray-900 mb-0.5 line-clamp-1 group-hover:text-purple-700 transition-colors">
                           {book.title || "Untitled Book"}
                         </h3>
-                        <p className="text-sm text-gray-400 mb-3">
+                        <p className="text-sm text-gray-400 mb-2">
                           For <span className="text-gray-600 font-medium">{book.recipient_name}</span>
                           {book.total_pages ? ` · ${book.total_pages} pages` : ""}
                         </p>
+                        {(() => {
+                          const bookReviews = allReviews.filter(r => r.book_id === book.id);
+                          const avg = bookReviews.length ? bookReviews.reduce((s, r) => s + r.rating, 0) / bookReviews.length : 0;
+                          return bookReviews.length > 0 ? (
+                            <div className="mb-2"><AverageRatingBadge averageRating={avg} totalReviews={bookReviews.length} size="sm" /></div>
+                          ) : null;
+                        })()}
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-300 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {book.created_date ? format(new Date(book.created_date), "d MMM yyyy") : ""}
                           </span>
                           <div className="flex gap-1.5">
+                            {book.status === "printed" && (
+                              <a href={createPageUrl("OrderTracking")} onClick={(e) => e.stopPropagation()}>
+                                <Button variant="ghost" size="sm" className="h-7 px-2 text-blue-500 hover:bg-blue-50 rounded-lg" title="Track order">
+                                  <Truck className="w-3.5 h-3.5" />
+                                </Button>
+                              </a>
+                            )}
                             {book.pdf_url && (
                               <a href={book.pdf_url} download onClick={(e) => e.stopPropagation()}>
                                 <Button variant="ghost" size="sm" className="h-7 px-2 text-purple-500 hover:bg-purple-50 rounded-lg">
