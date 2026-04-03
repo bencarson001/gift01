@@ -11,6 +11,7 @@ import ProductGallery from './pages/ProductGallery';
 import LaunchChecklist from './pages/LaunchChecklist';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import FeedbackWidget from '@/components/FeedbackWidget';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -45,6 +46,8 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <>
+    <FeedbackWidget />
     <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
@@ -68,6 +71,7 @@ const AuthenticatedApp = () => {
       <Route path="/LaunchChecklist" element={<LayoutWrapper currentPageName="LaunchChecklist"><LaunchChecklist /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </>
   );
 };
 

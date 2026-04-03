@@ -1,0 +1,27 @@
+{
+  "name": "Feedback",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "string"
+    },
+    "page": {
+      "type": "string",
+      "description": "The page the feedback was submitted from"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "comment"
+  ]
+}
