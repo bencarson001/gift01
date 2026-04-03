@@ -6,6 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { ArrowLeft, ArrowRight, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OccasionCard from "../components/OccasionCard";
+import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
 import WizardQuestion from "../components/WizardQuestion";
 import BookOpeningLoader from "../components/BookOpeningLoader";
 import { getQuestionsForOccasion } from "../components/wizard/WizardQuestions";
@@ -187,6 +188,7 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
                   What's the Occasion? ✨
                 </h2>
                 <p className="text-gray-500 text-lg">Choose the perfect occasion for your personalised book</p>
+                <UpcomingOccasionBanner variant="light" />
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
