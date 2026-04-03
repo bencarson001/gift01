@@ -37,13 +37,23 @@ const PLAN_DETAILS = {
   },
   subscription: {
     name: "Unlimited Monthly",
-    price: 7.99,
-    vat: 1.33,
+    price: 10.00,
+    vat: 1.67,
     icon: Star,
     color: "from-green-500 to-green-700",
     badge: "Best Value",
     badgeColor: "bg-green-100 text-green-700",
     features: ["Unlimited books/month", "All occasions", "Priority generation", "Cancel anytime"],
+  },
+  hardcover_subscription: {
+    name: "Hardcover Monthly",
+    price: 45.00,
+    vat: 7.50,
+    icon: Star,
+    color: "from-amber-500 to-amber-700",
+    badge: "Up to 3 Hardcovers",
+    badgeColor: "bg-amber-100 text-amber-700",
+    features: ["Up to 3 hardcover books/month", "Free UK delivery each", "Gift-ready packaging", "All digital books too", "Cancel anytime"],
   },
 };
 

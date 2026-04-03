@@ -7,13 +7,12 @@ import {
 } from "recharts";
 import {
   PoundSterling, BookOpen, TrendingUp, ShoppingBag,
-  Lock, RefreshCw, Clock, Bell, MessageSquare, CheckCheck
+  Lock, RefreshCw, Clock, Bell, MessageSquare, CheckCheck, BarChart2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format, startOfDay, startOfMonth, isAfter } from "date-fns";
-
-const ADMIN_PASSWORD = "giftmybook2026";
+import InsightsTab from "../components/admin/InsightsTab";
 
 const OCCASION_LABELS = {
   birthday: "🎂 Birthday", anniversary: "💍 Anniversary", baby: "👶 Baby",
@@ -29,7 +28,7 @@ const OCCASION_LABELS = {
 
 const PLAN_COLORS = { digital: "#7B5EA7", printed: "#D4A853", subscription: "#4ECDC4" };
 
-const TABS = ["Overview", "Feedback"];
+const TABS = ["Overview", "Feedback", "Insights"];
 
 function StatCard({ icon: Icon, label, value, sub, color }) {
   return (
@@ -53,14 +52,24 @@ function StatCard({ icon: Icon, label, value, sub, color }) {
 function PasswordGate({ onUnlock }) {
   const [pw, setPw] = useState("");
   const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  const attempt = () => {
-    if (pw === ADMIN_PASSWORD) {
-      onUnlock();
-    } else {
+  const attempt = async () => {
+    setChecking(true);
+    try {
+      const res = await base44.functions.invoke("getAdminPassword", {});
+      const correct = res.data?.password;
+      if (pw === correct) {
+        onUnlock();
+      } else {
+        setError(true);
+        setPw("");
+      }
+    } catch {
       setError(true);
       setPw("");
     }
+    setChecking(false);
   };
 
   return (
@@ -84,8 +93,8 @@ function PasswordGate({ onUnlock }) {
           className={`h-12 rounded-xl mb-3 ${error ? "border-red-400 focus:border-red-400" : ""}`}
         />
         {error && <p className="text-red-500 text-xs mb-3">Incorrect password</p>}
-        <Button onClick={attempt} className="w-full h-11 bg-purple-600 hover:bg-purple-700 text-white rounded-xl">
-          Unlock Dashboard
+        <Button onClick={attempt} disabled={checking} className="w-full h-11 bg-purple-600 hover:bg-purple-700 text-white rounded-xl">
+          {checking ? "Checking..." : "Unlock Dashboard"}
         </Button>
       </motion.div>
     </div>
@@ -295,6 +304,7 @@ export default function AdminDashboard() {
               }`}
             >
               {tab === "Feedback" && <MessageSquare className="w-3.5 h-3.5" />}
+              {tab === "Insights" && <BarChart2 className="w-3.5 h-3.5" />}
               {tab}
               {tab === "Feedback" && unreadCount > 0 && (
                 <span className="bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 leading-none">
@@ -427,6 +437,8 @@ export default function AdminDashboard() {
             onMarkAllRead={() => markAllReadMutation.mutate()}
           />
         )}
+
+        {activeTab === "Insights" && <InsightsTab />}
       </div>
     </div>
   );
