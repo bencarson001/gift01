@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
@@ -171,6 +172,26 @@ export default function AdminDashboard() {
   const [unlocked, setUnlocked] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
   const queryClient = useQueryClient();
+
+  // Real-time purchase notifications
+  useEffect(() => {
+    if (!unlocked) return;
+
+    const unsubscribe = base44.entities.Order.subscribe((event) => {
+      if (event.type === "create") {
+        const order = event.data;
+        const planName = order.product_type === "digital" ? "📥 Digital PDF" : order.product_type === "printed" ? "📦 Hardcover" : "✨ Subscription";
+        toast.success(`New ${planName} purchase! £${(order.price_gbp || 0).toFixed(2)}`, {
+          duration: 5000,
+          description: order.recipient_email || "Order placed",
+        });
+        // Refetch orders to reflect the new purchase
+        queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      }
+    });
+
+    return unsubscribe;
+  }, [unlocked, queryClient]);
 
   const { data: orders = [], refetch: refetchOrders, isFetching: fetchingOrders } = useQuery({
     queryKey: ["admin-orders"],
