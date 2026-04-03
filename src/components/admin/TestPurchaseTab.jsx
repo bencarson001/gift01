@@ -43,28 +43,26 @@ export default function TestPurchaseTab() {
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    const order = await base44.entities.Order.create({
-      book_id: form.book_id || (books[0]?.id || ""),
-      product_type: form.product_type,
-      price_gbp: parseFloat(form.price_gbp),
-      vat_amount: parseFloat((form.price_gbp * 0.2).toFixed(2)),
-      status: "paid",
-      recipient_email: form.recipient_email,
-      shipping_address: form.product_type === "printed" ? {
-        name: "Test User",
-        line1: "1 Test Street",
-        city: "London",
-        postcode: "SW1A 1AA",
-        country: "GB",
-      } : undefined,
-    });
+    try {
+      const res = await base44.functions.invoke("createTestOrder", {
+        book_id: form.book_id || (books[0]?.id || ""),
+        product_type: form.product_type,
+        price_gbp: form.price_gbp,
+        recipient_email: form.recipient_email,
+        shipping_address: form.product_type === "printed" ? {
+          name: "Test User",
+          line1: "1 Test Street",
+          city: "London",
+          postcode: "SW1A 1AA",
+          country: "GB",
+        } : undefined,
+      });
 
-    if (form.book_id) {
-      await base44.entities.Book.update(form.book_id, { status: "purchased" });
+      setLastCreated(res.data.order);
+      queryClient.invalidateQueries({ queryKey: ["admin-test-orders"] });
+    } catch (err) {
+      console.error("Failed to create test order:", err);
     }
-
-    setLastCreated(order);
-    queryClient.invalidateQueries({ queryKey: ["admin-test-orders"] });
     setSubmitting(false);
   };
 
