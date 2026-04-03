@@ -6,7 +6,7 @@ const PRODIGI_API_URL = 'https://api.prodigi.com/v4.0';
 // Prodigi SKU for A5 hardcover photo book (24-300 pages, gloss paper)
 // SKU format: BOOK-FE-A5-HC-GL-24 (A5, hardcover, gloss, 24 pages)
 // Pages must be a multiple of 2, minimum 24. We'll use 24 as baseline and let the PDF define the content.
-const BOOK_SKU = 'BOOK-FE-A5-HC-GL-24';
+const BOOK_SKU = 'BOOK-FE-A5-L-HARD-G';
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
