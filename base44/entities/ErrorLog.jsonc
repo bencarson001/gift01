@@ -1,0 +1,89 @@
+{
+  "name": "ErrorLog",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "error",
+        "payment_issue",
+        "security",
+        "bug"
+      ],
+      "description": "Type of error"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium",
+      "description": "Severity level"
+    },
+    "title": {
+      "type": "string",
+      "description": "Error title/summary"
+    },
+    "message": {
+      "type": "string",
+      "description": "Error message"
+    },
+    "stack_trace": {
+      "type": "string",
+      "description": "Full stack trace if available"
+    },
+    "order_id": {
+      "type": "string",
+      "description": "Related order ID if applicable"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User affected by the error"
+    },
+    "context": {
+      "type": "object",
+      "description": "Additional context (page, function, etc.)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "acknowledged",
+        "investigating",
+        "resolved"
+      ],
+      "default": "new",
+      "description": "Resolution status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes about the error"
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "message"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
