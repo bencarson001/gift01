@@ -35,8 +35,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Not a printed order', skipped: true });
     }
 
-    if (order.printful_order_id) {
-      return Response.json({ message: 'Prodigi order already exists', prodigi_order_id: order.printful_order_id });
+    if (order.prodigi_order_id) {
+      return Response.json({ message: 'Prodigi order already exists', prodigi_order_id: order.prodigi_order_id });
     }
 
     // Fetch the book
@@ -103,9 +103,8 @@ Deno.serve(async (req) => {
 
     const prodigiOrderId = data.order?.id || data.id;
 
-    // Store prodigi order ID in printful_order_id field (reusing existing field)
     await base44.asServiceRole.entities.Order.update(order.id, {
-      printful_order_id: String(prodigiOrderId),
+      prodigi_order_id: String(prodigiOrderId),
       status: 'processing',
       tracking_status: 'in_production',
     });
