@@ -255,9 +255,9 @@ export default function OrderSuccess() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <Gift className="w-4 h-4 text-purple-600" />
-                <p className="text-sm font-bold text-gray-800">Share & earn £5 credit</p>
+                <p className="text-sm font-bold text-gray-800">Share & earn £1 credit</p>
               </div>
-              <p className="text-xs text-gray-500 mb-3">Send friends your link — earn £5 for every person who purchases</p>
+              <p className="text-xs text-gray-500 mb-3">Send friends your link — earn £1 credit for every person who purchases</p>
               <div className="flex items-center gap-2">
                 <p className="text-xs font-mono text-purple-600 bg-white rounded-xl px-3 py-2 flex-1 truncate border border-purple-100">
                   {referralLink}

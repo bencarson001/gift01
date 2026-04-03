@@ -14,10 +14,18 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
 
-    // Support both direct invocation {order_id} and entity automation payload {event, data}
+    // Support three invocation modes:
+    // 1. Direct: { order_id }
+    // 2. Book entity automation: { event, data } where data is the Book
+    // 3. Direct with book_id: { book_id }
     let order;
+    let book;
+
     if (body.event && body.data) {
-      order = body.data;
+      // Entity automation — data is the Book record
+      book = body.data;
+      const orders = await base44.asServiceRole.entities.Order.filter({ book_id: book.id, product_type: 'printed' });
+      order = orders[0];
     } else {
       const order_id = body.order_id;
       if (!order_id) {
@@ -28,7 +36,7 @@ Deno.serve(async (req) => {
     }
 
     if (!order || !order.id) {
-      return Response.json({ error: 'Order not found' }, { status: 404 });
+      return Response.json({ error: 'Order not found', skipped: true });
     }
 
     if (order.product_type !== 'printed') {
@@ -39,9 +47,11 @@ Deno.serve(async (req) => {
       return Response.json({ message: 'Prodigi order already exists', prodigi_order_id: order.prodigi_order_id });
     }
 
-    // Fetch the book
-    const books = await base44.asServiceRole.entities.Book.filter({ id: order.book_id });
-    const book = books[0];
+    // Fetch the book if not already loaded from automation payload
+    if (!book) {
+      const books = await base44.asServiceRole.entities.Book.filter({ id: order.book_id });
+      book = books[0];
+    }
 
     if (!book) {
       return Response.json({ error: 'Book not found' }, { status: 404 });

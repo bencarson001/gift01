@@ -137,6 +137,11 @@ export default function Checkout() {
       await base44.entities.Book.update(book.id, { status: "purchased" });
     }
 
+    // Generate PDF (needed for both digital download and print fulfilment)
+    if (book) {
+      base44.functions.invoke("generateBookPdf", { book_id: book.id }).catch(() => {});
+    }
+
     // Send confirmation email
     const bookTitle = book?.title || "Your Personalised Book";
     await base44.integrations.Core.SendEmail({
@@ -153,7 +158,7 @@ export default function Checkout() {
               <p style="color: #6B7280; font-size: 16px; margin: 0;">"${bookTitle}"</p>
             </div>
             <p style="color: #374151; font-size: 15px; line-height: 1.8;">
-              ${planType === "digital" ? `Your digital PDF is ready in your <a href="${window.location.origin}${createPageUrl("MyLibrary")}" style="color: #D4A853; font-weight: bold;">My Library</a>. Download and share it with ${book?.recipient_name || "your recipient"} — we hope it makes them smile! 😊` : ""}
+              ${planType === "digital" ? `Your personalised book is being prepared and will be ready to download from your <a href="${window.location.origin}/MyLibrary" style="color: #D4A853; font-weight: bold;">My Library</a> within a minute. We hope it makes ${book?.recipient_name || "your recipient"} smile! 😊` : ""}
               ${planType === "printed" ? `Your premium hardcover is being prepared with love and will be shipped within 3–5 working days. We'll send you a tracking link as soon as it's on its way! 📦` : ""}
               ${planType === "subscription" ? `Welcome to GiftMyBookUK Unlimited! You can now create as many magical personalised books as you like. Your subscription renews monthly. 🌟` : ""}
             </p>
