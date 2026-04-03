@@ -42,7 +42,8 @@ export default function Home() {
     <div className="min-h-screen">
 
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#4A2D7A] to-[#2D1B4E] text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#4A2D7A] to-[#2D1B4E] text-white"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <SparkleParticles active count={12} />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80')] bg-cover bg-center opacity-10" />
 
@@ -257,7 +258,8 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-gray-900 text-gray-400 py-8 px-4">
+      <footer className="bg-gray-900 text-gray-400 py-8 px-4 pb-24 md:pb-8"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)" }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>

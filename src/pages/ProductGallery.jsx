@@ -3,10 +3,11 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Camera, ArrowLeft, Loader2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import PullToRefresh from "../components/PullToRefresh";
 
 const OCCASION_LABELS = {
   birthday: "🎂 Birthday", anniversary: "💍 Anniversary", baby: "👶 Baby",
@@ -19,16 +20,22 @@ const OCCASION_LABELS = {
 
 export default function ProductGallery() {
   const [selected, setSelected] = useState(null);
+  const queryClient = useQueryClient();
 
   const { data: entries = [], isLoading } = useQuery({
     queryKey: ["product-gallery-public"],
     queryFn: () => base44.entities.ProductGallery.filter({ status: "approved" }),
   });
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["product-gallery-public"] });
+  };
+
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(160deg, #fdf2f8 0%, #faf5ff 50%, #fffbeb 100%)" }}>
+    <div className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(160deg, #fdf2f8 0%, #faf5ff 50%, #fffbeb 100%)" }}>
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-40">
+      <div className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-40"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to={createPageUrl("Home")} className="text-gray-500 hover:text-gray-700 flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" /> Home
@@ -44,6 +51,7 @@ export default function ProductGallery() {
         </div>
       </div>
 
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Hero */}
         <motion.div
@@ -183,6 +191,7 @@ export default function ProductGallery() {
           </Link>
         </motion.div>
       </div>
+      </PullToRefresh>
     </div>
   );
 }

@@ -23,6 +23,12 @@ body {
   text-rendering: optimizeLegibility;
   /* Prevent layout shift from scrollbar appearing */
   overflow-y: scroll;
+  overscroll-behavior-y: none;
+}
+
+button, a, nav, [role="tab"] {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Smooth scrolling everywhere */

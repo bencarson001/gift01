@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Plus, Eye, Download, Clock, Loader2, Repeat, Share2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import ReferralCard from "../components/ReferralCard";
+import PullToRefresh from "../components/PullToRefresh";
 
 const STATUS_CONFIG = {
   draft:      { label: "Draft",      className: "bg-gray-100 text-gray-600 border-gray-200" },
@@ -48,6 +49,7 @@ function BookshelfStripes() {
 
 export default function MyLibrary() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [user, setUser] = React.useState(null);
   const [filter, setFilter] = useState("all");
 
@@ -60,6 +62,10 @@ export default function MyLibrary() {
     queryFn: () => base44.entities.Book.list("-created_date", 50),
   });
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["my-books"] });
+  };
+
   const filtered = filter === "all" ? books : books.filter((b) => b.status === filter);
 
   const filterOptions = [
@@ -70,11 +76,12 @@ export default function MyLibrary() {
   ];
 
   return (
-    <div className="min-h-screen relative" style={{ background: "linear-gradient(160deg, #fdf2f8 0%, #faf5ff 40%, #fffbeb 100%)" }}>
+    <div className="min-h-screen relative pb-20 md:pb-0" style={{ background: "linear-gradient(160deg, #fdf2f8 0%, #faf5ff 40%, #fffbeb 100%)" }}>
       <BookshelfStripes />
 
       {/* Header */}
-      <div className="relative z-10 bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0">
+      <div className="relative z-10 bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to={createPageUrl("Home")} className="font-serif text-xl font-bold text-gray-900">
             GiftMyBook<span className="text-amber-500">UK</span>
@@ -98,6 +105,7 @@ export default function MyLibrary() {
         </div>
       </div>
 
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-10">
         <div className="grid lg:grid-cols-4 gap-8">
 
@@ -320,6 +328,7 @@ export default function MyLibrary() {
           </div>
         </div>
       </div>
+      </PullToRefresh>
     </div>
   );
 }

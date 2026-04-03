@@ -12,6 +12,8 @@ import LaunchChecklist from './pages/LaunchChecklist';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import FeedbackWidget from '@/components/FeedbackWidget';
+import BottomNav from '@/components/BottomNav';
+import ThemeProvider from '@/lib/ThemeProvider';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -48,6 +50,7 @@ const AuthenticatedApp = () => {
   return (
     <>
     <FeedbackWidget />
+    <BottomNav />
     <Routes>
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
@@ -79,6 +82,7 @@ const AuthenticatedApp = () => {
 function App() {
 
   return (
+    <ThemeProvider>
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
@@ -88,6 +92,7 @@ function App() {
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>
+    </ThemeProvider>
   )
 }
 
