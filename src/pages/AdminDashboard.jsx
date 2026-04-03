@@ -171,6 +171,8 @@ function FeedbackTab({ feedback, onMarkRead, onMarkAllRead }) {
 export default function AdminDashboard() {
   const [unlocked, setUnlocked] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
+  const [showHistory, setShowHistory] = useState(false);
+  const [notificationHistory, setNotificationHistory] = useState([]);
   const queryClient = useQueryClient();
 
   // Real-time purchase notifications
@@ -185,6 +187,8 @@ export default function AdminDashboard() {
           duration: 5000,
           description: order.recipient_email || "Order placed",
         });
+        // Add to history
+        setNotificationHistory(prev => [{ ...order, timestamp: new Date(), planName }, ...prev].slice(0, 20));
         // Refetch orders to reflect the new purchase
         queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       }
@@ -311,6 +315,19 @@ export default function AdminDashboard() {
               <RefreshCw className={`w-3.5 h-3.5 ${fetchingOrders ? "animate-spin" : ""}`} />
               Refresh
             </Button>
+
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="relative p-2 rounded-xl hover:bg-purple-50 transition-colors"
+              title="Notification history"
+            >
+              <Bell className="w-5 h-5 text-gray-500" />
+              {notificationHistory.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {notificationHistory.length > 99 ? "99+" : notificationHistory.length}
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -340,6 +357,39 @@ export default function AdminDashboard() {
           ))}
         </div>
       </div>
+
+      {/* Notification History Panel */}
+      {showHistory && (
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          className="fixed left-0 top-32 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 max-h-96 overflow-y-auto"
+        >
+          <div className="sticky top-0 bg-white border-b border-gray-100 p-4 flex items-center justify-between">
+            <h3 className="font-semibold text-gray-900">Purchase History</h3>
+            <button onClick={() => setShowHistory(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+          </div>
+          {notificationHistory.length === 0 ? (
+            <div className="p-6 text-center text-gray-400 text-sm">
+              No purchases yet today
+            </div>
+          ) : (
+            <div className="space-y-2 p-3">
+              {notificationHistory.map((notif, i) => (
+                <div key={i} className="bg-gradient-to-r from-green-50 to-transparent rounded-xl p-3 border border-green-100 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-900">{notif.planName}</span>
+                    <span className="font-bold text-green-600">£{(notif.price_gbp || 0).toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{notif.recipient_email || "Unknown"}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{notif.timestamp.toLocaleTimeString()}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 py-8">
 
