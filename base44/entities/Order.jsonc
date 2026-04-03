@@ -65,8 +65,13 @@
         }
       }
     },
+    "prodigi_order_id": {
+      "type": "string",
+      "description": "Prodigi print order ID"
+    },
     "printful_order_id": {
-      "type": "string"
+      "type": "string",
+      "description": "Legacy field \u2014 now stores Prodigi order ID for backward compatibility"
     },
     "tracking_number": {
       "type": "string",
@@ -107,6 +112,22 @@
     "download_count": {
       "type": "number",
       "default": 0
+    },
+    "prodigi_cost_gbp": {
+      "type": "number",
+      "description": "Cost to produce at Prodigi"
+    },
+    "profit_amount_gbp": {
+      "type": "number",
+      "description": "Profit after Prodigi cost"
+    },
+    "stripe_payout_id": {
+      "type": "string",
+      "description": "Stripe payout ID for bank transfer"
+    },
+    "payout_status": {
+      "type": "string",
+      "description": "Status of bank payout (pending, in_transit, paid, failed)"
     }
   },
   "required": [
