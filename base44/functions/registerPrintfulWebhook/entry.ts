@@ -19,37 +19,26 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
     });
-    const storesData = await storesRes.json();
+    const STORE_ID = 17963536;
 
-    return Response.json({ stores: storesData });
-
-    // First, check existing webhooks
-    const listRes = await fetch('https://api.printful.com/v2/webhooks', {
-      headers: {
-        'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    const listData = await listRes.json();
-    console.log('Existing webhooks:', JSON.stringify(listData));
-
-    // Register webhook with Printful v2 API
-    const res = await fetch('https://api.printful.com/v2/webhooks', {
+    // Set webhook config using correct field names from GET response
+    const postRes = await fetch(`https://api.printful.com/v2/webhooks?store_id=${STORE_ID}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${PRINTFUL_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        url: WEBHOOK_URL,
-        events: ['package_shipped', 'order_updated'],
+        default_url: WEBHOOK_URL,
+        events: [
+          { type: 'shipment_sent' },
+          { type: 'order_updated' },
+        ],
       }),
     });
+    const postData = await postRes.json();
 
-    const data = await res.json();
-    console.log('Register result:', JSON.stringify(data));
-
-    return Response.json({ success: true, existing: listData, result: data });
+    return Response.json({ success: true, result: postData });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

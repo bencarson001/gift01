@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'Invalid webhook payload' }, { status: 400 });
   }
 
-  if (type === 'package_shipped') {
+  if (type === 'package_shipped' || type === 'shipment_sent') {
     const printfulOrderId = String(data.order?.id || data.order_id || '');
     if (!printfulOrderId) {
       return Response.json({ error: 'No order ID in payload' }, { status: 400 });
