@@ -1,40 +1,41 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
-// Handles Prodigi webhook events: order.status.update, shipment.update
-// Register this URL in your Prodigi dashboard under Settings → Webhooks
+// Prodigi v4 callback handler
+// Prodigi sends the full Order object as the POST body on every status change.
+// Docs: https://www.prodigi.com/print-api/docs/reference/#callbacks
+// The body IS the order object — no type/payload wrapper.
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
 
   try {
-    const body = await req.json();
-    const { type, payload } = body;
+    const order = await req.json();
 
-    if (!type || !payload) {
-      return Response.json({ error: 'Invalid webhook payload' }, { status: 400 });
-    }
-
-    // Prodigi uses merchantReference as our internal order ID
-    const merchantReference = payload.order?.merchantReference || payload.merchantReference;
+    // Prodigi sends the full order object. merchantReference is our internal order ID.
+    const merchantReference = order.merchantReference;
 
     if (!merchantReference) {
       return Response.json({ message: 'No merchantReference, skipping' });
     }
 
     const orders = await base44.asServiceRole.entities.Order.filter({ id: merchantReference });
-    const order = orders[0];
+    const localOrder = orders[0];
 
-    if (!order) {
+    if (!localOrder) {
       return Response.json({ message: 'Order not found, skipping' });
     }
 
-    if (type === 'shipment.update' || type === 'order.shipment.update') {
-      const shipment = payload.shipment || payload.order?.shipments?.[0] || {};
+    const stage = order.status?.stage || '';
+    const shipments = order.shipments || [];
+
+    // Handle shipping — Prodigi populates shipments[] when dispatched
+    if (shipments.length > 0) {
+      const shipment = shipments[0];
       const trackingNumber = shipment.tracking?.number || '';
       const trackingUrl = shipment.tracking?.url || '';
       const carrier = shipment.carrier?.name || shipment.carrier || '';
 
-      await base44.asServiceRole.entities.Order.update(order.id, {
+      await base44.asServiceRole.entities.Order.update(localOrder.id, {
         tracking_number: trackingNumber,
         tracking_carrier: carrier,
         tracking_url: trackingUrl,
@@ -44,17 +45,17 @@ Deno.serve(async (req) => {
       });
 
       // Send shipping notification email
-      if (order.recipient_email) {
-        const books = order.book_id
-          ? await base44.asServiceRole.entities.Book.filter({ id: order.book_id })
+      if (localOrder.recipient_email) {
+        const books = localOrder.book_id
+          ? await base44.asServiceRole.entities.Book.filter({ id: localOrder.book_id })
           : [];
         const book = books[0];
         const bookTitle = book?.title || 'Your personalised book';
         const appUrl = 'https://app.giftmybookuk.com';
-        const trackingPageUrl = `${appUrl}/OrderTracking?order_id=${order.id}`;
+        const trackingPageUrl = `${appUrl}/OrderTracking?order_id=${localOrder.id}`;
 
         await base44.asServiceRole.integrations.Core.SendEmail({
-          to: order.recipient_email,
+          to: localOrder.recipient_email,
           subject: `📦 Your book has shipped! — GiftMyBookUK`,
           body: `
             <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #fdf2f8;">
@@ -83,18 +84,24 @@ Deno.serve(async (req) => {
       }
     }
 
-    if (type === 'order.status.update' || type === 'order.update') {
-      const stage = payload.order?.status?.stage || payload.status?.stage || '';
-      if (stage === 'Complete' || stage === 'Delivered') {
-        await base44.asServiceRole.entities.Order.update(order.id, {
-          tracking_status: 'delivered',
-          status: 'delivered',
-          delivered_at: new Date().toISOString(),
-        });
-      }
+    // Handle completion
+    if (stage === 'Complete') {
+      await base44.asServiceRole.entities.Order.update(localOrder.id, {
+        tracking_status: 'delivered',
+        status: 'delivered',
+        delivered_at: new Date().toISOString(),
+      });
     }
 
-    return Response.json({ received: true, type });
+    // Keep order status in sync for in-progress stages
+    if (stage === 'InProgress' && localOrder.status === 'paid') {
+      await base44.asServiceRole.entities.Order.update(localOrder.id, {
+        status: 'processing',
+        tracking_status: 'in_production',
+      });
+    }
+
+    return Response.json({ received: true, stage, merchantReference });
 
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
