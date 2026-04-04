@@ -8,6 +8,7 @@ import {
   ArrowLeft, Loader2, CreditCard, Truck, Download, Star,
   Shield, Lock, CheckCircle, Info, Gift
 } from "lucide-react";
+import { logPaymentError } from "@/lib/errorLogger";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,6 +115,7 @@ export default function Checkout() {
     if (!isFormValid()) return;
     setIsProcessing(true);
 
+    try {
     // Mark used coupons as spent
     if (couponDiscount > 0 && user?.email) {
       const creditedReferrals = await base44.entities.Referral.filter({ referrer_email: user.email, status: "credited" });
@@ -122,15 +124,23 @@ export default function Checkout() {
     }
 
     // Create order record
-    await base44.entities.Order.create({
-      book_id: bookId,
-      product_type: planType,
-      price_gbp: finalPrice,
-      vat_amount: plan.vat,
-      status: "paid",
-      recipient_email: email,
-      shipping_address: planType === "printed" ? { ...shippingAddress, country: "GB" } : undefined,
-    });
+    let newOrder;
+    try {
+      newOrder = await base44.entities.Order.create({
+        book_id: bookId,
+        product_type: planType,
+        price_gbp: finalPrice,
+        vat_amount: plan.vat,
+        status: "paid",
+        recipient_email: email,
+        shipping_address: planType === "printed" ? { ...shippingAddress, country: "GB" } : undefined,
+      });
+    } catch (orderErr) {
+      await logPaymentError(`Failed to create ${planType} order`, null, {
+        book_id: bookId, plan: planType, price: finalPrice, email, error: orderErr.message,
+      });
+      throw orderErr;
+    }
 
     // Update book status
     if (book) {
@@ -139,11 +149,16 @@ export default function Checkout() {
 
     // Generate PDF (needed for both digital download and print fulfilment)
     if (book) {
-      base44.functions.invoke("generateBookPdf", { book_id: book.id }).catch(() => {});
+      base44.functions.invoke("generateBookPdf", { book_id: book.id }).catch(async (pdfErr) => {
+        await logPaymentError("PDF generation failed after purchase", newOrder?.id, {
+          book_id: book.id, error: pdfErr.message,
+        });
+      });
     }
 
     // Send confirmation email
     const bookTitle = book?.title || "Your Personalised Book";
+    try {
     await base44.integrations.Core.SendEmail({
       to: email,
       subject: `🎉 "${bookTitle}" is ready — GiftMyBookUK`,
@@ -174,8 +189,17 @@ export default function Checkout() {
       `,
     });
 
+    } catch (emailErr) {
+      await logPaymentError("Confirmation email failed after purchase", newOrder?.id, {
+        email, book_id: bookId, error: emailErr.message,
+      });
+    }
+
     setIsProcessing(false);
     navigate(createPageUrl("OrderSuccess") + `?id=${bookId}&plan=${planType}`);
+    } catch (err) {
+      setIsProcessing(false);
+    }
   };
 
   return (
