@@ -19,8 +19,8 @@ Deno.serve(async (req) => {
       shipping_address,
     } = body;
 
-    // Use service role to bypass RLS (admin function)
-    const order = await base44.asServiceRole.entities.Order.create({
+    // Admin is now allowed to create orders via RLS
+    const order = await base44.entities.Order.create({
       book_id: book_id || '',
       product_type,
       price_gbp: parseFloat(price_gbp),
@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
     // Update book status if provided
     if (book_id) {
-      await base44.asServiceRole.entities.Book.update(book_id, { status: 'purchased' });
+      await base44.entities.Book.update(book_id, { status: 'purchased' });
     }
 
     return Response.json({ order });

@@ -1,10 +1,18 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
-  ScatterChart, Scatter, ComposedChart, Area, AreaChart
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, Legend,
+  ResponsiveContainer, CartesianGrid, AreaChart, Area
 } from 'recharts';
-import { TrendingUp, Users, Clock, Eye, Target, Zap, Smartphone, Monitor, AlertCircle } from 'lucide-react';
+import { TrendingUp, Users, BookOpen, PoundSterling, Target, Zap, Loader2 } from 'lucide-react';
+import {
+  format, subDays, startOfDay, eachDayOfInterval,
+  startOfMonth, eachMonthOfInterval, subMonths, getHours
+} from 'date-fns';
+
+const CHART_COLORS = ['#7B5EA7', '#D4A853', '#4ECDC4', '#F59E0B', '#10B981', '#EF4444'];
 
 function AnalyticsCard({ title, children }) {
   return (
@@ -19,122 +27,129 @@ function AnalyticsCard({ title, children }) {
   );
 }
 
-function MetricRow({ icon: Icon, label, value, unit = '', trend = null, color = 'text-gray-600' }) {
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
   return (
-    <div className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
-      <div className="flex items-center gap-3">
-        <div className={`w-8 h-8 rounded-lg bg-${color.split('-')[1]}-100 flex items-center justify-center`}>
-          <Icon className={`w-4 h-4 ${color}`} />
-        </div>
-        <span className="text-sm text-gray-600">{label}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="font-bold text-gray-900">{value}{unit}</span>
-        {trend && (
-          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-            trend > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}>
-            {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
-          </span>
-        )}
-      </div>
+    <div className="bg-white border border-gray-100 rounded-xl shadow-lg px-3 py-2 text-sm">
+      <p className="font-medium text-gray-700 mb-1">{label}</p>
+      {payload.map((p, i) => (
+        <p key={i} style={{ color: p.color }} className="text-xs">
+          {p.name}: {p.value}
+        </p>
+      ))}
     </div>
   );
-}
+};
 
 export default function PerformanceAnalyticsTab() {
-  // Simulated performance data - in production, this would come from analytics API
-  const performanceData = useMemo(() => {
-    // Page load time data (last 14 days)
-    const pageLoadData = [
-      { day: 'Mon', home: 1.2, create: 2.1, checkout: 2.8 },
-      { day: 'Tue', home: 1.1, create: 2.0, checkout: 2.6 },
-      { day: 'Wed', home: 1.3, create: 2.3, checkout: 2.9 },
-      { day: 'Thu', home: 1.0, create: 1.9, checkout: 2.5 },
-      { day: 'Fri', home: 1.4, create: 2.4, checkout: 3.1 },
-      { day: 'Sat', home: 1.5, create: 2.5, checkout: 3.2 },
-      { day: 'Sun', home: 1.2, create: 2.0, checkout: 2.7 },
-    ];
+  const { data: books = [], isLoading: loadingBooks } = useQuery({
+    queryKey: ['perf-books'],
+    queryFn: () => base44.entities.Book.list('-created_date', 500),
+  });
 
-    // Traffic by source
-    const trafficData = [
-      { source: 'Direct', value: 2400, percentage: 35 },
-      { source: 'Organic', value: 1800, percentage: 26 },
-      { source: 'Social', value: 1200, percentage: 17 },
-      { source: 'Referral', value: 900, percentage: 13 },
-      { source: 'Email', value: 600, percentage: 9 },
-    ];
+  const { data: orders = [], isLoading: loadingOrders } = useQuery({
+    queryKey: ['perf-orders'],
+    queryFn: () => base44.entities.Order.list('-created_date', 500),
+  });
 
-    // Device breakdown
-    const deviceData = [
-      { name: 'Desktop', value: 3800, percentage: 54 },
-      { name: 'Mobile', value: 2600, percentage: 37 },
-      { name: 'Tablet', value: 600, percentage: 9 },
-    ];
+  const isLoading = loadingBooks || loadingOrders;
 
-    // Conversion funnel
-    const conversionFunnel = [
-      { stage: 'Home Visit', users: 7000, conversion: 100 },
-      { stage: 'Create Book', users: 3500, conversion: 50 },
-      { stage: 'Preview', users: 2100, conversion: 30 },
-      { stage: 'Checkout', users: 1470, conversion: 21 },
-      { stage: 'Purchase', users: 588, conversion: 8.4 },
-    ];
+  const stats = useMemo(() => {
+    const paidOrders = orders.filter(o =>
+      ['paid', 'processing', 'shipped', 'delivered'].includes(o.status)
+    );
 
-    // User engagement hourly
-    const hourlyData = [
-      { hour: '00:00', users: 120 },
-      { hour: '04:00', users: 85 },
-      { hour: '08:00', users: 450 },
-      { hour: '12:00', users: 820 },
-      { hour: '16:00', users: 950 },
-      { hour: '20:00', users: 1200 },
-      { hour: '23:59', users: 400 },
-    ];
+    const totalRevenue = paidOrders.reduce((s, o) => s + (o.price_gbp || 0), 0);
+    const avgOrderValue = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
+    const conversionRate = books.length > 0 ? (paidOrders.length / books.length) * 100 : 0;
 
-    // Core metrics
-    const metrics = {
-      totalSessionsToday: 2847,
-      avgSessionDuration: '4m 32s',
-      bounceRate: 42.3,
-      conversionRate: 8.4,
-      avgPageLoad: 1.8,
-      mobileTraffic: 37,
-      peakHour: '16:00-17:00',
-      avgOrderValue: 24.87,
-    };
+    // Books created per day (last 30 days)
+    const today = startOfDay(new Date());
+    const thirtyDaysAgo = subDays(today, 29);
+    const days = eachDayOfInterval({ start: thirtyDaysAgo, end: today });
+    const booksPerDay = days.map(day => ({
+      date: format(day, 'd MMM'),
+      Books: books.filter(b => startOfDay(new Date(b.created_date)).getTime() === day.getTime()).length,
+      Orders: paidOrders.filter(o => startOfDay(new Date(o.created_date)).getTime() === day.getTime()).length,
+    }));
+
+    // Revenue per month (last 6 months)
+    const sixMonthsAgo = subMonths(startOfMonth(new Date()), 5);
+    const months = eachMonthOfInterval({ start: sixMonthsAgo, end: new Date() });
+    const revenuePerMonth = months.map(month => ({
+      month: format(month, 'MMM yy'),
+      Revenue: parseFloat(paidOrders.filter(o => {
+        const d = new Date(o.created_date);
+        return d.getMonth() === month.getMonth() && d.getFullYear() === month.getFullYear();
+      }).reduce((s, o) => s + (o.price_gbp || 0), 0).toFixed(2)),
+      Books: books.filter(b => {
+        const d = new Date(b.created_date);
+        return d.getMonth() === month.getMonth() && d.getFullYear() === month.getFullYear();
+      }).length,
+    }));
+
+    // Orders by hour of day
+    const hourBuckets = Array.from({ length: 8 }, (_, i) => ({
+      hour: `${i * 3}:00`,
+      Orders: 0,
+    }));
+    paidOrders.forEach(o => {
+      const h = getHours(new Date(o.created_date));
+      const bucket = Math.floor(h / 3);
+      if (hourBuckets[bucket]) hourBuckets[bucket].Orders++;
+    });
+
+    // Product split
+    const productMap = { digital: 0, printed: 0, subscription: 0 };
+    paidOrders.forEach(o => { if (productMap[o.product_type] !== undefined) productMap[o.product_type]++; });
+    const productData = Object.entries(productMap)
+      .filter(([, v]) => v > 0)
+      .map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+
+    // Art style
+    const artMap = {};
+    books.forEach(b => { if (b.art_style) artMap[b.art_style] = (artMap[b.art_style] || 0) + 1; });
+    const artData = Object.entries(artMap).sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), count }));
+
+    // Status breakdown
+    const statusMap = {};
+    orders.forEach(o => { statusMap[o.status] = (statusMap[o.status] || 0) + 1; });
+    const statusData = Object.entries(statusMap).map(([name, value]) => ({ name, value }));
 
     return {
-      pageLoadData,
-      trafficData,
-      deviceData,
-      conversionFunnel,
-      hourlyData,
-      metrics,
+      totalRevenue,
+      avgOrderValue,
+      conversionRate,
+      totalBooks: books.length,
+      totalOrders: paidOrders.length,
+      booksPerDay,
+      revenuePerMonth,
+      hourBuckets,
+      productData,
+      artData,
+      statusData,
     };
-  }, []);
+  }, [books, orders]);
 
-  const colors = {
-    primary: '#7B5EA7',
-    secondary: '#D4A853',
-    accent: '#4ECDC4',
-    success: '#10B981',
-    warning: '#F59E0B',
-    danger: '#EF4444',
-  };
-
-  const chartColors = ['#7B5EA7', '#D4A853', '#4ECDC4', '#F59E0B', '#10B981'];
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: Eye, label: 'Sessions Today', value: '2,847', trend: 12 },
-          { icon: Users, label: 'Avg Session', value: '4m 32s', trend: -3 },
-          { icon: Target, label: 'Conversion Rate', value: '8.4%', trend: 5 },
-          { icon: TrendingUp, label: 'Avg Order Value', value: '£24.87', trend: 8 },
+          { icon: PoundSterling, label: 'Total Revenue', value: `£${stats.totalRevenue.toFixed(2)}`, sub: `${stats.totalOrders} paid orders`, color: 'bg-purple-500' },
+          { icon: BookOpen, label: 'Books Created', value: stats.totalBooks, sub: 'all time', color: 'bg-amber-400' },
+          { icon: Target, label: 'Conversion Rate', value: `${stats.conversionRate.toFixed(1)}%`, sub: 'books → purchases', color: 'bg-emerald-500' },
+          { icon: TrendingUp, label: 'Avg Order Value', value: `£${stats.avgOrderValue.toFixed(2)}`, sub: 'per paid order', color: 'bg-rose-400' },
         ].map((kpi, i) => (
           <motion.div
             key={i}
@@ -145,156 +160,126 @@ export default function PerformanceAnalyticsTab() {
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-gray-500 font-medium">{kpi.label}</span>
-              <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                <kpi.icon className="w-4 h-4 text-purple-600" />
+              <div className={`w-8 h-8 ${kpi.color} rounded-lg flex items-center justify-center`}>
+                <kpi.icon className="w-4 h-4 text-white" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">{kpi.value}</p>
-            <p className={`text-xs font-semibold ${kpi.trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {kpi.trend > 0 ? '↑' : '↓'} {Math.abs(kpi.trend)}% vs yesterday
-            </p>
+            <p className="text-2xl font-bold text-gray-900">{kpi.value}</p>
+            <p className="text-xs text-gray-400 mt-1">{kpi.sub}</p>
           </motion.div>
         ))}
       </div>
 
-      {/* Page Load Performance & Traffic Source */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        <AnalyticsCard title="📊 Page Load Time (seconds)">
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={performanceData.pageLoadData}>
-              <XAxis dataKey="day" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip formatter={(v) => `${v}s`} />
-              <Legend />
-              <Line type="monotone" dataKey="home" stroke={colors.primary} dot={{ r: 3 }} name="Home" />
-              <Line type="monotone" dataKey="create" stroke={colors.secondary} dot={{ r: 3 }} name="Create Book" />
-              <Line type="monotone" dataKey="checkout" stroke={colors.danger} dot={{ r: 3 }} name="Checkout" />
-            </LineChart>
-          </ResponsiveContainer>
-        </AnalyticsCard>
+      {/* Books & Orders per day */}
+      <AnalyticsCard title="📅 Daily Activity — Last 30 Days">
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart data={stats.booksPerDay} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="booksGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#7B5EA7" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#7B5EA7" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="ordersGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#D4A853" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#D4A853" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} interval={Math.floor(stats.booksPerDay.length / 6)} />
+            <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} allowDecimals={false} />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Area type="monotone" dataKey="Books" stroke="#7B5EA7" strokeWidth={2} fill="url(#booksGrad)" />
+            <Area type="monotone" dataKey="Orders" stroke="#D4A853" strokeWidth={2} fill="url(#ordersGrad)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </AnalyticsCard>
 
-        <AnalyticsCard title="🌍 Traffic by Source">
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={performanceData.trafficData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percentage }) => `${name} ${percentage}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {performanceData.trafficData.map((_, i) => (
-                  <Cell key={`cell-${i}`} fill={chartColors[i % chartColors.length]} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-        </AnalyticsCard>
-      </div>
-
-      {/* Device Breakdown & Conversion Funnel */}
+      {/* Revenue per month & Product split */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <AnalyticsCard title="📱 Device Breakdown">
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart
-              data={performanceData.deviceData}
-              layout="horizontal"
-              margin={{ left: 80, right: 20 }}
-            >
-              <XAxis type="number" tick={{ fontSize: 11 }} />
-              <YAxis type="category" dataKey="name" width={70} tick={{ fontSize: 11 }} />
-              <Tooltip formatter={(v) => `${v} visitors`} />
-              <Bar dataKey="value" fill={colors.primary} radius={[0, 6, 6, 0]} />
+        <AnalyticsCard title="💰 Monthly Revenue — Last 6 Months">
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={stats.revenuePerMonth} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="Revenue" name="£ Revenue" fill="#7B5EA7" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-          <div className="mt-4 space-y-2">
-            {performanceData.deviceData.map((item) => (
-              <div key={item.name} className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">{item.name}</span>
-                <span className="font-semibold text-gray-900">{item.percentage}%</span>
-              </div>
-            ))}
-          </div>
         </AnalyticsCard>
 
-        <AnalyticsCard title="🎯 Conversion Funnel">
-          <div className="space-y-3">
-            {performanceData.conversionFunnel.map((stage, i) => (
-              <div key={i} className="space-y-1">
-                <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="font-medium text-gray-700">{stage.stage}</span>
-                  <span className="text-xs text-gray-400">{stage.users.toLocaleString()} users</span>
-                </div>
-                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${stage.conversion}%` }}
-                    transition={{ duration: 0.8, delay: i * 0.1 }}
-                    className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-gray-400">Conversion: {stage.conversion}%</span>
-                  {i < performanceData.conversionFunnel.length - 1 && (
-                    <span className="text-amber-600 font-semibold">
-                      {(((performanceData.conversionFunnel[i + 1].users / stage.users) * 100 - 100) * -1).toFixed(1)}% drop
-                    </span>
-                  )}
-                </div>
+        <AnalyticsCard title="🛍️ Sales by Product Type">
+          {stats.productData.length === 0 ? (
+            <p className="text-gray-400 text-sm py-12 text-center">No sales yet</p>
+          ) : (
+            <div className="flex items-center gap-6">
+              <ResponsiveContainer width="55%" height={200}>
+                <PieChart>
+                  <Pie data={stats.productData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} dataKey="value" paddingAngle={3}>
+                    {stats.productData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-3">
+                {stats.productData.map((d, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm">
+                    <span className="w-3 h-3 rounded-full shrink-0" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                    <span className="text-gray-600">{d.name}</span>
+                    <span className="font-bold text-gray-900 ml-auto pl-3">{d.value}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </AnalyticsCard>
       </div>
 
-      {/* Hourly Engagement & Performance Metrics */}
+      {/* Hourly orders & Art styles */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <AnalyticsCard title="⏰ Hourly User Activity">
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={performanceData.hourlyData}>
-              <XAxis dataKey="hour" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip formatter={(v) => `${v} users`} />
-              <Area type="monotone" dataKey="users" fill={colors.accent} stroke={colors.accent} />
-            </AreaChart>
+        <AnalyticsCard title="⏰ Orders by Time of Day">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={stats.hourBuckets} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="hour" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} allowDecimals={false} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="Orders" fill="#4ECDC4" radius={[6, 6, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </AnalyticsCard>
 
-        <AnalyticsCard title="⚡ Core Metrics">
-          <div className="space-y-1">
-            <MetricRow icon={Eye} label="Total Sessions (Today)" value="2,847" color="text-blue-600" />
-            <MetricRow icon={Clock} label="Avg Page Load" value={`${performanceData.metrics.avgPageLoad}s`} color="text-purple-600" />
-            <MetricRow icon={Users} label="Mobile Traffic" value={`${performanceData.metrics.mobileTraffic}%`} color="text-pink-600" />
-            <MetricRow icon={AlertCircle} label="Bounce Rate" value={`${performanceData.metrics.bounceRate}%`} color="text-orange-600" />
-            <MetricRow icon={Target} label="Peak Hour" value={performanceData.metrics.peakHour} color="text-green-600" />
-          </div>
-        </AnalyticsCard>
+        {stats.artData.length > 0 && (
+          <AnalyticsCard title="🎨 Art Style Popularity">
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={stats.artData} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+                <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="count" name="Books" radius={[6, 6, 0, 0]}>
+                  {stats.artData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </AnalyticsCard>
+        )}
       </div>
 
-      {/* Performance Alerts */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-amber-50 border border-amber-200 rounded-2xl p-6"
-      >
-        <div className="flex gap-4">
-          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
-            <AlertCircle className="w-5 h-5 text-amber-600" />
+      {/* Order status breakdown */}
+      {stats.statusData.length > 0 && (
+        <AnalyticsCard title="📦 Order Status Breakdown">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {stats.statusData.map((s, i) => (
+              <div key={i} className="bg-gray-50 rounded-xl p-4 text-center">
+                <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+                <p className="text-xs text-gray-500 capitalize mt-1">{s.name}</p>
+              </div>
+            ))}
           </div>
-          <div>
-            <h3 className="font-semibold text-amber-900 mb-2">⚠️ Performance Insights</h3>
-            <ul className="text-sm text-amber-800 space-y-1 list-disc list-inside">
-              <li>Checkout page load time increased 12% vs last week — optimize images</li>
-              <li>Mobile bounce rate at 48% — consider mobile-first redesign</li>
-              <li>Peak traffic 16:00-17:00 — ensure capacity for rush hours</li>
-              <li>Social traffic down 8% — review recent campaigns</li>
-            </ul>
-          </div>
-        </div>
-      </motion.div>
+        </AnalyticsCard>
+      )}
 
     </div>
   );
