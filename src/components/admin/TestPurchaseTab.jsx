@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreditCard, CheckCircle, Loader2, Trash2, Package, BookOpen } from "lucide-react";
+import { logError } from "@/lib/errorLogger";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,6 +63,13 @@ export default function TestPurchaseTab() {
       queryClient.invalidateQueries({ queryKey: ["admin-test-orders"] });
     } catch (err) {
       console.error("Failed to create test order:", err);
+      await logError({
+        type: "bug",
+        severity: "medium",
+        title: "Test Purchase Failed",
+        message: err.message || String(err),
+        context: { product_type: form.product_type, price_gbp: form.price_gbp, recipient_email: form.recipient_email },
+      });
     }
     setSubmitting(false);
   };
