@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, ArrowRight, Wand2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Wand2, AlertCircle } from "lucide-react";
+import { logError } from "@/lib/errorLogger";
 import { Button } from "@/components/ui/button";
 import OccasionCard from "../components/OccasionCard";
 import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
@@ -25,6 +26,7 @@ export default function CreateBook() {
   const [selectedOccasion, setSelectedOccasion] = useState(surpriseOccasion || null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [generationError, setGenerationError] = useState(null);
 
   const questions = selectedOccasion ? getQuestionsForOccasion(selectedOccasion) : [];
 
@@ -56,7 +58,9 @@ export default function CreateBook() {
 
   const generateBook = useCallback(async () => {
     setStep("generating");
+    setGenerationError(null);
 
+    try {
     const recipientName = answers.recipient_name || "Someone Special";
     const senderName = answers.sender_name || "A friend";
     const artStyle = answers.art_style || "watercolour";
@@ -152,6 +156,22 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
     });
 
     navigate(createPageUrl("BookPreview") + `?id=${book.id}`);
+  } catch (err) {
+    await logError({
+      type: "bug",
+      severity: "high",
+      title: "Book Generation Failed",
+      message: err.message || String(err),
+      context: {
+        occasion: selectedOccasion,
+        recipient_name: answers.recipient_name,
+        art_style: answers.art_style,
+        error: err.message,
+      },
+    });
+    setGenerationError(err.message || "Something went wrong generating your book.");
+    setStep("questions");
+  }
   }, [answers, selectedOccasion, navigate]);
 
   const currentQ = questions[currentQuestionIndex];
@@ -216,6 +236,22 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
                   </Button>
                 </motion.div>
               )}
+            </motion.div>
+          )}
+
+          {/* Generation error banner */}
+          {step === "questions" && generationError && (
+            <motion.div
+              key="gen-error"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-xl mx-auto mb-4 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3"
+            >
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-red-800">Generation failed — please try again</p>
+                <p className="text-xs text-red-600 mt-0.5">{generationError}</p>
+              </div>
             </motion.div>
           )}
 

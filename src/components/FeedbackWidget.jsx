@@ -34,7 +34,7 @@ export default function FeedbackWidget() {
       {/* Floating button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-50 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-lg flex items-center gap-1.5 transition-colors"
+        className="fixed bottom-20 md:bottom-5 right-5 z-50 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold px-3 py-2 rounded-full shadow-lg flex items-center gap-1.5 transition-colors"
         aria-label="Leave feedback"
       >
         <MessageSquare className="w-3.5 h-3.5" />
@@ -59,7 +59,7 @@ export default function FeedbackWidget() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="fixed bottom-16 right-5 z-50 w-80 bg-white rounded-2xl shadow-2xl border border-purple-100 overflow-hidden"
+              className="fixed bottom-32 md:bottom-16 right-5 z-50 w-80 bg-white rounded-2xl shadow-2xl border border-purple-100 overflow-hidden"
             >
               {/* Header */}
               <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-3 flex items-center justify-between">
