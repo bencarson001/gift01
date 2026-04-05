@@ -367,7 +367,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm">
                 <li>About Us</li>
                 <li>Pricing</li>
-                <li>Contact</li>
+                <li><Link to="/Contact" className="hover:text-white transition-colors">Contact</Link></li>
                 <li>Blog</li>
               </ul>
             </div>
