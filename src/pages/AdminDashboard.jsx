@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format, startOfDay, startOfMonth, isAfter } from "date-fns";
-import InsightsTab from "../components/admin/InsightsTab.jsx";
+import InsightsTab from "../components/admin/InsightsTab";
 import TestPurchaseTab from "../components/admin/TestPurchaseTab";
 import PerformanceAnalyticsTab from "../components/admin/PerformanceAnalyticsTab";
 import ErrorLogTab from "../components/admin/ErrorLogTab";
