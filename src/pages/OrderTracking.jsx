@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft, Package, Truck, CheckCircle, Clock, AlertCircle,
-  MapPin, ExternalLink, Loader2, Search
+  MapPin, ExternalLink, Loader2, Search, RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,7 +55,28 @@ export default function OrderTracking() {
   });
   const book = bookArr?.[0];
 
-  const currentStepIndex = STATUS_ORDER.indexOf(order?.tracking_status || "not_dispatched");
+  // Live Prodigi status (only for logged-in users with a real order)
+  const {
+    data: liveStatus,
+    isLoading: loadingLive,
+    refetch: refetchLive,
+    dataUpdatedAt,
+  } = useQuery({
+    queryKey: ["prodigi-status", activeOrderId],
+    queryFn: () => base44.functions.invoke("getProdigiOrderStatus", { order_id: activeOrderId }).then(r => r.data),
+    enabled: !!order && !!user,
+    staleTime: 5 * 60 * 1000, // cache for 5 min
+  });
+
+  // Prefer live data over DB data where available
+  const trackingStatus = liveStatus?.tracking_status || order?.tracking_status || "not_dispatched";
+  const trackingNumber = liveStatus?.tracking_number || order?.tracking_number;
+  const trackingCarrier = liveStatus?.tracking_carrier || order?.tracking_carrier;
+  const trackingUrl = liveStatus?.tracking_url || order?.tracking_url;
+  const dispatchedAt = liveStatus?.dispatched_at || order?.dispatched_at;
+  const deliveredAt = liveStatus?.delivered_at || order?.delivered_at;
+
+  const currentStepIndex = STATUS_ORDER.indexOf(trackingStatus);
 
   const handleSearch = () => {
     if (searchInput.trim()) setActiveOrderId(searchInput.trim());
@@ -157,6 +178,37 @@ export default function OrderTracking() {
 
         {order && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+
+            {/* Live status header */}
+            <div className="bg-white rounded-2xl shadow-sm border border-purple-50 p-4 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                {loadingLive ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+                ) : liveStatus?.has_prodigi ? (
+                  <span className="w-2 h-2 bg-green-400 rounded-full" />
+                ) : (
+                  <span className="w-2 h-2 bg-amber-400 rounded-full" />
+                )}
+                <span className="text-sm font-medium text-gray-700">
+                  {loadingLive ? "Fetching live status..." :
+                   liveStatus?.has_prodigi ? "Live Prodigi data" :
+                   "Stored tracking data"}
+                </span>
+                {liveStatus?.prodigi_status && (
+                  <span className="text-xs bg-purple-50 text-purple-600 border border-purple-100 px-2 py-0.5 rounded-full font-mono">
+                    {liveStatus.prodigi_status}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => refetchLive()}
+                disabled={loadingLive}
+                className="text-gray-400 hover:text-purple-600 transition-colors disabled:opacity-40"
+                title="Refresh"
+              >
+                <RefreshCw className={`w-4 h-4 ${loadingLive ? "animate-spin" : ""}`} />
+              </button>
+            </div>
             {/* Book info */}
             {book && (
               <div className="bg-white rounded-2xl shadow-sm border border-purple-50 p-5 flex items-center gap-4">
@@ -204,11 +256,11 @@ export default function OrderTracking() {
                             {isCurrent && <span className="ml-2 text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded-full">Current</span>}
                           </p>
                           <p className={`text-xs mt-0.5 ${isCurrent ? "text-gray-600" : "text-gray-400"}`}>{step.desc}</p>
-                          {isCurrent && step.key === "dispatched" && order.dispatched_at && (
-                            <p className="text-xs text-purple-500 mt-1">Dispatched {format(new Date(order.dispatched_at), "d MMM, HH:mm")}</p>
+                          {isCurrent && step.key === "dispatched" && dispatchedAt && (
+                            <p className="text-xs text-purple-500 mt-1">Dispatched {format(new Date(dispatchedAt), "d MMM, HH:mm")}</p>
                           )}
-                          {isCurrent && step.key === "delivered" && order.delivered_at && (
-                            <p className="text-xs text-green-600 mt-1">Delivered {format(new Date(order.delivered_at), "d MMM, HH:mm")}</p>
+                          {isCurrent && step.key === "delivered" && deliveredAt && (
+                            <p className="text-xs text-green-600 mt-1">Delivered {format(new Date(deliveredAt), "d MMM, HH:mm")}</p>
                           )}
                         </div>
                       </div>
@@ -231,22 +283,22 @@ export default function OrderTracking() {
             </div>
 
             {/* Tracking number & carrier */}
-            {order.tracking_number ? (
+            {trackingNumber ? (
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-blue-800">Tracking Number</p>
-                    <p className="text-lg font-mono font-bold text-blue-900 mt-0.5">{order.tracking_number}</p>
-                    {order.tracking_carrier && (
-                      <p className="text-xs text-blue-600 mt-0.5">Carrier: {order.tracking_carrier}</p>
+                    <p className="text-lg font-mono font-bold text-blue-900 mt-0.5">{trackingNumber}</p>
+                    {trackingCarrier && (
+                      <p className="text-xs text-blue-600 mt-0.5">Carrier: {trackingCarrier}</p>
                     )}
                   </div>
-                  {order.tracking_url && (
+                  {trackingUrl && (
                     <a
-                      href={order.tracking_url}
+                      href={trackingUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+                      className="flex items-center gap-2 bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors shrink-0"
                     >
                       Track <ExternalLink className="w-3.5 h-3.5" />
                     </a>
@@ -257,7 +309,44 @@ export default function OrderTracking() {
               <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 text-center">
                 <Clock className="w-8 h-8 text-gray-300 mx-auto mb-2" />
                 <p className="text-sm text-gray-500">Tracking number will appear here once your order is dispatched.</p>
-                <p className="text-xs text-gray-400 mt-1">Usually within 3–5 working days</p>
+                <p className="text-xs text-gray-400 mt-1">Usually within 3–5 working days of payment</p>
+              </div>
+            )}
+
+            {/* Prodigi shipment details */}
+            {liveStatus?.prodigi_details?.shipments?.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-purple-50 p-5">
+                <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-purple-500" /> Shipment Details
+                </h3>
+                <div className="space-y-3">
+                  {liveStatus.prodigi_details.shipments.map((s, i) => (
+                    <div key={i} className="bg-gray-50 rounded-xl p-3 text-sm">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          {s.carrier && <p className="font-medium text-gray-800">Carrier: {s.carrier}</p>}
+                          {s.tracking_number && <p className="font-mono text-xs text-gray-600 mt-0.5">{s.tracking_number}</p>}
+                          {s.dispatched_date && (
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              Dispatched: {format(new Date(s.dispatched_date), "d MMM yyyy")}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-400 mt-0.5">{s.items} item(s)</p>
+                        </div>
+                        {s.tracking_url && (
+                          <a
+                            href={s.tracking_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </motion.div>
