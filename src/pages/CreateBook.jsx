@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from "react";
+import { usePageTracking } from "@/hooks/usePageTracking";
+import { trackFeature } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -28,10 +30,12 @@ export default function CreateBook() {
   const [answers, setAnswers] = useState({});
   const [generationError, setGenerationError] = useState(null);
 
+  usePageTracking("CreateBook");
   const questions = selectedOccasion ? getQuestionsForOccasion(selectedOccasion) : [];
 
   const handleOccasionSelect = (occasion) => {
     setSelectedOccasion(occasion);
+    trackFeature("occasion_selected", "CreateBook", { occasion });
   };
 
   const startQuestions = () => {
@@ -59,6 +63,7 @@ export default function CreateBook() {
   const generateBook = useCallback(async () => {
     setStep("generating");
     setGenerationError(null);
+    trackFeature("book_generation_started", "CreateBook", { occasion: selectedOccasion });
 
     try {
     const recipientName = answers.recipient_name || "Someone Special";

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import ReferralCard from "../components/ReferralCard";
 import PullToRefresh from "../components/PullToRefresh";
+import { usePageTracking } from "@/hooks/usePageTracking";
 
 const STATUS_CONFIG = {
   draft:      { label: "Draft",      className: "bg-gray-100 text-gray-600 border-gray-200" },
@@ -49,6 +50,7 @@ function BookshelfStripes() {
 }
 
 export default function MyLibrary() {
+  usePageTracking("MyLibrary");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = React.useState(null);

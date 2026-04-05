@@ -9,6 +9,7 @@ import AffiliateOffers from "../components/AffiliateOffers";
 import AdSenseUnit from "../components/AdSenseUnit";
 import SparkleParticles from "../components/SparkleParticles";
 import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
+import { usePageTracking } from "@/hooks/usePageTracking";
 
 const OCCASIONS = [
   { emoji: "🎂", label: "Birthday", key: "birthday" },
@@ -38,6 +39,7 @@ const STATS = [
 ];
 
 export default function Home() {
+  usePageTracking("Home");
   const [showWelcome, setShowWelcome] = useState(() => {
     return !localStorage.getItem("gmb_welcome_seen");
   });

@@ -1,0 +1,78 @@
+{
+  "name": "AnalyticsEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "description": "Type of event: page_view, feature_used, session_end, book_created, purchase_started"
+    },
+    "page": {
+      "type": "string",
+      "description": "Page name e.g. Home, CreateBook, BookPreview"
+    },
+    "feature": {
+      "type": "string",
+      "description": "Feature name if event_type is feature_used"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "referrer": {
+      "type": "string",
+      "description": "Referring URL or source (e.g. google, direct, facebook)"
+    },
+    "device_type": {
+      "type": "string",
+      "enum": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "description": "Device category"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country code from browser locale"
+    },
+    "language": {
+      "type": "string"
+    },
+    "session_duration_seconds": {
+      "type": "number",
+      "description": "Session length in seconds (set on session_end event)"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email if logged in"
+    },
+    "occasion": {
+      "type": "string",
+      "description": "Occasion type if relevant"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Extra key/value context"
+    }
+  },
+  "required": [
+    "event_type"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
