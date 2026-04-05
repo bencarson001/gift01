@@ -122,10 +122,13 @@ export default function SharedBook() {
     }
   };
 
-  const pages = book?.pages_content || [];
-  const totalPages = pages.length;
+  const allPages = book?.pages_content || [];
+  const PREVIEW_LIMIT = 3;
+  const pages = allPages.slice(0, PREVIEW_LIMIT);
+  const totalPages = allPages.length;
+  const previewPages = pages.length;
   const canPrev = currentPage > 0;
-  const canNext = currentPage < totalPages - 1;
+  const canNext = currentPage < previewPages - 1;
 
   if (isLoading) {
     return (
@@ -235,30 +238,36 @@ export default function SharedBook() {
         )}
 
         {/* Page reader */}
-        {totalPages > 0 && (
+        {previewPages > 0 && (
           <div className="mb-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-700 text-sm">Read the book</h2>
-              <span className="text-xs text-gray-400">{currentPage + 1} / {totalPages}</span>
+              <h2 className="font-semibold text-gray-700 text-sm">Preview — first {PREVIEW_LIMIT} pages</h2>
+              <span className="text-xs text-gray-400">{currentPage + 1} / {previewPages}</span>
             </div>
 
             {/* Progress bar */}
             <div className="w-full h-1.5 bg-purple-100 rounded-full mb-5 overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-purple-400 to-amber-400 rounded-full"
-                animate={{ width: `${((currentPage + 1) / totalPages) * 100}%` }}
+                animate={{ width: `${((currentPage + 1) / previewPages) * 100}%` }}
                 transition={{ duration: 0.4 }}
               />
             </div>
 
-            <AnimatePresence mode="wait">
-              <PageCard
-                key={currentPage}
-                page={pages[currentPage]}
-                index={currentPage}
-                total={totalPages}
-              />
-            </AnimatePresence>
+            {/* Screenshot / save protection */}
+            <div
+              style={{ userSelect: "none", WebkitUserSelect: "none", pointerEvents: "auto" }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <AnimatePresence mode="wait">
+                <PageCard
+                  key={currentPage}
+                  page={pages[currentPage]}
+                  index={currentPage}
+                  total={previewPages}
+                />
+              </AnimatePresence>
+            </div>
 
             {/* Navigation */}
             <div className="flex items-center justify-between mt-5">
@@ -271,9 +280,8 @@ export default function SharedBook() {
                 <ChevronLeft className="w-4 h-4" /> Previous
               </Button>
 
-              {/* Dot indicators (max 10 shown) */}
-              <div className="flex items-center gap-1 flex-wrap justify-center max-w-[160px]">
-                {pages.slice(0, Math.min(totalPages, 10)).map((_, i) => (
+              <div className="flex items-center gap-1">
+                {pages.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i)}
@@ -282,7 +290,6 @@ export default function SharedBook() {
                     }`}
                   />
                 ))}
-                {totalPages > 10 && <span className="text-xs text-gray-400 ml-1">…</span>}
               </div>
 
               <Button
@@ -293,6 +300,26 @@ export default function SharedBook() {
                 Next <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
+
+            {/* "Rest is locked" nudge */}
+            {totalPages > PREVIEW_LIMIT && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-5 bg-gradient-to-r from-purple-50 to-amber-50 border border-purple-100 rounded-2xl p-4 text-center"
+              >
+                <p className="text-sm font-semibold text-gray-800 mb-1">
+                  📖 {totalPages - PREVIEW_LIMIT} more pages in the full book
+                </p>
+                <p className="text-xs text-gray-500 mb-3">Purchase to unlock all {totalPages} pages + download or print your copy.</p>
+                <Link to={createPageUrl("CreateBook")}>
+                  <Button size="sm" className="bg-gradient-to-r from-amber-400 to-amber-500 text-gray-900 font-bold rounded-xl hover:from-amber-500 hover:to-amber-600">
+                    Create Your Own Book ✨
+                  </Button>
+                </Link>
+              </motion.div>
+            )}
           </div>
         )}
 

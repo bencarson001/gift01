@@ -1,8 +1,8 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { BookOpen, Sparkles, Star, ArrowRight, ChevronRight } from "lucide-react";
+import { BookOpen, Sparkles, Star, ArrowRight, ChevronRight, ChevronDown, X, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TestimonialCarousel from "../components/TestimonialCarousel";
 import AffiliateOffers from "../components/AffiliateOffers";
@@ -38,8 +38,76 @@ const STATS = [
 ];
 
 export default function Home() {
+  const [showWelcome, setShowWelcome] = useState(() => {
+    return !localStorage.getItem("gmb_welcome_seen");
+  });
+
+  const dismissWelcome = () => {
+    localStorage.setItem("gmb_welcome_seen", "1");
+    setShowWelcome(false);
+  };
+
   return (
     <div className="min-h-screen">
+
+      {/* ── WELCOME POPUP ── */}
+      <AnimatePresence>
+        {showWelcome && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={dismissWelcome}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", stiffness: 200, damping: 22 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative"
+            >
+              <button
+                onClick={dismissWelcome}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="text-center mb-5">
+                <div className="text-5xl mb-3">📖</div>
+                <h2 className="font-serif text-2xl font-bold text-gray-900 mb-1">
+                  Welcome to GiftMyBook<span className="text-amber-500">UK</span> ✨
+                </h2>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5">
+                <p className="text-sm text-amber-900 leading-relaxed">
+                  <strong>🚧 New site, still growing!</strong> We're under continuous development as we work towards the high-quality experience our customers deserve. You may encounter the occasional rough edge — we're on it!
+                </p>
+              </div>
+
+              <p className="text-sm text-gray-600 leading-relaxed mb-5 text-center">
+                Please use the{" "}
+                <span className="inline-flex items-center gap-1 font-semibold text-purple-700">
+                  <MessageSquare className="w-3.5 h-3.5" /> Leave Feedback
+                </span>{" "}
+                button in the bottom‑right to report any errors. We aim to squash every bug as quickly as possible.
+                <br /><br />
+                Thank you for your time — we hope you enjoy your personalised treasure for years to come. 🎁
+              </p>
+
+              <Button
+                onClick={dismissWelcome}
+                className="w-full h-11 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl font-semibold"
+              >
+                Let's Get Started ✨
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#4A2D7A] to-[#2D1B4E] text-white"
@@ -91,8 +159,24 @@ export default function Home() {
           </motion.div>
         </div>
 
+        {/* Scroll hint */}
+          <motion.div
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/50 text-xs"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+          >
+            <span>Scroll to explore</span>
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+            >
+              <ChevronDown className="w-5 h-5" />
+            </motion.div>
+          </motion.div>
+
         {/* Wave */}
-        <div className="absolute bottom-0 left-0 right-0">
+          <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 80" fill="none" className="w-full">
             <path d="M0 80L60 73C120 67 240 53 360 47C480 40 600 40 720 43C840 47 960 53 1080 57C1200 60 1320 60 1380 60L1440 60V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z" fill="white" />
           </svg>
