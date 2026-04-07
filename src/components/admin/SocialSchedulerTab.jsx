@@ -46,6 +46,14 @@ export default function SocialSchedulerTab() {
         publish_now: publishNow
       });
       if (res.data?.success) {
+        // If publishing immediately, also post to Facebook right now
+        if (publishNow && res.data?.post_text) {
+          await base44.functions.invoke("postToFacebookPage", {
+            message: res.data.post_text,
+            image_url: res.data.image_url || null,
+            title: `GiftMyBookUK - ${res.data.occasion_theme || 'Special Offer'}`,
+          });
+        }
         toast.success(publishNow ? "Post generated & published to Facebook!" : "Post generated & scheduled!");
         setPreview(res.data);
         queryClient.invalidateQueries({ queryKey: ["scheduled-posts"] });
