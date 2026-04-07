@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, User, CalendarDays, ShoppingBag, Loader2, LogOut, Trash2 } from "lucide-react";
+import { ArrowLeft, User, CalendarDays, ShoppingBag, Loader2, LogOut, Trash2, Shield } from "lucide-react";
+import { useState as useAdminState } from "react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import OccasionRemindersTab from "../components/profile/OccasionRemindersTab";
 import OrdersUploadTab from "../components/profile/OrdersUploadTab";
@@ -20,6 +22,27 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("occasions");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showAdminPrompt, setShowAdminPrompt] = useState(false);
+  const [adminPw, setAdminPw] = useState("");
+  const [adminError, setAdminError] = useState(false);
+  const [adminChecking, setAdminChecking] = useState(false);
+
+  const handleAdminLogin = async () => {
+    setAdminChecking(true);
+    setAdminError(false);
+    try {
+      const res = await base44.functions.invoke("getAdminPassword", {});
+      if (adminPw === res.data?.password) {
+        window.location.href = "/admin";
+      } else {
+        setAdminError(true);
+        setAdminPw("");
+      }
+    } catch {
+      setAdminError(true);
+    }
+    setAdminChecking(false);
+  };
 
   useEffect(() => {
     base44.auth.me().then(u => { setUser(u); setLoading(false); }).catch(() => setLoading(false));
@@ -132,6 +155,54 @@ export default function UserProfile() {
                   → Refer Friends
                 </Link>
               </div>
+
+              {/* Admin access — only shown for admin role */}
+              {user?.role === "admin" && (
+                <div className="pt-4 border-t border-gray-100 mt-2">
+                  {!showAdminPrompt ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowAdminPrompt(true)}
+                      className="rounded-xl text-sm flex items-center gap-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                    >
+                      <Shield className="w-4 h-4" /> Admin Dashboard
+                    </Button>
+                  ) : (
+                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 space-y-3">
+                      <p className="text-sm font-semibold text-purple-800 flex items-center gap-2">
+                        <Shield className="w-4 h-4" /> Confirm Admin Password
+                      </p>
+                      <Input
+                        type="password"
+                        value={adminPw}
+                        onChange={e => { setAdminPw(e.target.value); setAdminError(false); }}
+                        onKeyDown={e => e.key === "Enter" && handleAdminLogin()}
+                        placeholder="Enter admin password"
+                        className={`h-10 rounded-xl text-sm ${adminError ? "border-red-400" : ""}`}
+                        autoFocus
+                      />
+                      {adminError && <p className="text-xs text-red-500">Incorrect password</p>}
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleAdminLogin}
+                          disabled={adminChecking || !adminPw}
+                          className="h-9 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm"
+                        >
+                          {adminChecking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Go to Dashboard"}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => { setShowAdminPrompt(false); setAdminPw(""); setAdminError(false); }}
+                          className="h-9 px-3 rounded-xl text-sm text-gray-500"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="pt-4 border-t border-gray-100 mt-2">
                 <Button
                   variant="ghost"

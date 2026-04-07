@@ -1,0 +1,79 @@
+{
+  "name": "ScheduledPost",
+  "type": "object",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook"
+      ],
+      "default": "facebook",
+      "description": "Social platform"
+    },
+    "post_text": {
+      "type": "string",
+      "description": "Generated post content"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "AI generated image URL for the post"
+    },
+    "scheduled_for": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to publish"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "posted",
+        "failed",
+        "draft"
+      ],
+      "default": "scheduled"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Facebook post ID after publishing"
+    },
+    "occasion_theme": {
+      "type": "string",
+      "description": "Occasion theme this post promotes"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error details if post failed"
+    },
+    "ai_generated": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "post_text",
+    "scheduled_for"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
