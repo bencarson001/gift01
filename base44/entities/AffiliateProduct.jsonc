@@ -1,0 +1,116 @@
+{
+  "name": "AffiliateProduct",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Product title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short product description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "gifts",
+        "stationery",
+        "home_decor",
+        "personalised",
+        "trending",
+        "wrapping",
+        "cards",
+        "experiences"
+      ],
+      "description": "Product category"
+    },
+    "price_gbp": {
+      "type": "number",
+      "description": "Approximate price in GBP"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URL"
+    },
+    "affiliate_url": {
+      "type": "string",
+      "description": "Amazon affiliate URL with tag"
+    },
+    "asin": {
+      "type": "string",
+      "description": "Amazon ASIN if known"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Amazon star rating (1-5)"
+    },
+    "review_count": {
+      "type": "number",
+      "description": "Number of reviews"
+    },
+    "is_trending": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a trending/bestseller item"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this product is shown in the marketplace"
+    },
+    "click_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total clicks on this affiliate link"
+    },
+    "estimated_revenue_gbp": {
+      "type": "number",
+      "default": 0,
+      "description": "Estimated revenue from this product"
+    },
+    "performance_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Combined click + revenue performance score"
+    },
+    "week_added": {
+      "type": "string",
+      "description": "ISO week when this product was added e.g. 2024-W01"
+    },
+    "ai_curated": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this was AI curated"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Search tags"
+    },
+    "badge": {
+      "type": "string",
+      "description": "Optional badge e.g. Best Seller, New This Week, Top Pick"
+    }
+  },
+  "required": [
+    "title",
+    "affiliate_url",
+    "category"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

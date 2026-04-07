@@ -6,6 +6,7 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import AdminDashboard from './pages/AdminDashboard';
+import AffiliateMarketplace from './pages/AffiliateMarketplace';
 import Contact from './pages/Contact';
 import UserProfile from './pages/UserProfile';
 import ProductGallery from './pages/ProductGallery';
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
       <Route path="/LaunchChecklist" element={<LayoutWrapper currentPageName="LaunchChecklist"><LaunchChecklist /></LayoutWrapper>} />
       <Route path="/OrderTracking" element={<LayoutWrapper currentPageName="OrderTracking"><OrderTracking /></LayoutWrapper>} />
       <Route path="/Contact" element={<LayoutWrapper currentPageName="Contact"><Contact /></LayoutWrapper>} />
+      <Route path="/AffiliateMarketplace" element={<AffiliateMarketplace />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </>
