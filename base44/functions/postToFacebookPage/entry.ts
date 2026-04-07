@@ -5,7 +5,7 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
 
-    if (!user?.role !== 'admin') {
+    if (user?.role !== 'admin') {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
@@ -27,7 +27,11 @@ Deno.serve(async (req) => {
     // Build the post data
     const postData = new URLSearchParams();
     postData.append('message', message);
-    if (image_url) postData.append('picture', image_url);
+    if (image_url) {
+      postData.append('picture', image_url);
+      // Facebook requires a link when posting an image
+      postData.append('link', link || 'https://giftmybookuk.com');
+    }
     if (link) postData.append('link', link);
     if (title) postData.append('name', title);
     postData.append('access_token', token);
