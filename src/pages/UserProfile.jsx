@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { ArrowLeft, User, CalendarDays, ShoppingBag, Loader2, LogOut, Trash2, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import OccasionRemindersTab from "../components/profile/OccasionRemindersTab";
