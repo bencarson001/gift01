@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
-const FB_PAGE_ACCESS_TOKEN = Deno.env.get("FB_PAGE_ACCESS_TOKEN");
-const FB_PAGE_ID = Deno.env.get("FB_PAGE_ID");
+const FB_PAGE_ACCESS_TOKEN = Deno.env.get("FACEBOOK_BUSINESS_TOKEN");
+const FB_PAGE_ID = Deno.env.get("FACEBOOK_PAGE_ID");
 
 const OCCASIONS = [
   "birthday", "anniversary", "baby", "wedding", "roast", "graduation",
@@ -119,8 +119,8 @@ Current month context: ${new Date().toLocaleString('en-GB', { month: 'long', yea
         fbBody.append("access_token", FB_PAGE_ACCESS_TOKEN);
 
         const endpoint = imageUrl
-          ? `https://graph.facebook.com/v18.0/${FB_PAGE_ID}/photos`
-          : `https://graph.facebook.com/v18.0/${FB_PAGE_ID}/feed`;
+          ? `https://graph.facebook.com/v25.0/${FB_PAGE_ID}/photos`
+          : `https://graph.facebook.com/v25.0/${FB_PAGE_ID}/feed`;
 
         const fbRes = await fetch(endpoint, { method: "POST", body: fbBody });
         fbResult = await fbRes.json();

@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
 
     // Post to Facebook Graph API
     const response = await fetch(
-      `https://graph.facebook.com/v21.0/${pageId}/feed`,
+      `https://graph.facebook.com/v25.0/${pageId}/feed`,
       {
         method: 'POST',
         body: postData,
