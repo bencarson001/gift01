@@ -43,6 +43,13 @@ export default function Home() {
   const [showWelcome, setShowWelcome] = useState(() => {
     return !localStorage.getItem("gmb_welcome_seen");
   });
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setShowStickyBar(window.scrollY > 420);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const dismissWelcome = () => {
     localStorage.setItem("gmb_welcome_seen", "1");
@@ -50,7 +57,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20 md:pb-0">
 
       {/* ── WELCOME POPUP ── */}
       <AnimatePresence>
@@ -111,6 +118,29 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* ── STICKY MOBILE CTA BAR ── */}
+      <AnimatePresence>
+        {showStickyBar && (
+          <motion.div
+            initial={{ y: -60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -60, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed top-0 left-0 right-0 z-[100] md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md px-4 py-2.5 flex items-center justify-between gap-3"
+          >
+            <div>
+              <p className="text-xs font-bold text-gray-900">GiftMyBook<span className="text-amber-500">UK</span></p>
+              <p className="text-[10px] text-gray-500">Personalised books from £9.99</p>
+            </div>
+            <Link to={createPageUrl("CreateBook")}>
+              <Button className="h-9 px-4 text-sm bg-gradient-to-r from-amber-400 to-amber-500 text-gray-900 font-bold rounded-xl shadow-sm">
+                Create Now ✨
+              </Button>
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── HERO ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#4A2D7A] to-[#2D1B4E] text-white"
         style={{ paddingTop: "env(safe-area-inset-top)" }}>
@@ -146,6 +176,13 @@ export default function Home() {
                   Create Your Book — From £9.99
                 </Button>
               </Link>
+            </div>
+
+            {/* Trust nudge under CTA */}
+            <div className="flex items-center justify-center gap-4 mt-4 flex-wrap text-purple-200 text-xs">
+              <span>✅ Free preview — no card needed</span>
+              <span>⚡ Ready in 60 seconds</span>
+              <span>🇬🇧 Free UK delivery</span>
             </div>
 
             {/* Upcoming occasion banner */}
@@ -213,10 +250,13 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-8"
           >
+            <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5 mb-4 text-sm text-amber-800 font-medium">
+              👇 Tap your occasion below to start instantly
+            </div>
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               What's the Occasion?
             </h2>
-            <p className="text-gray-500 text-sm">Tap one to start your personalised book instantly.</p>
+            <p className="text-gray-500 text-sm">No sign-up needed. Preview your book free in 60 seconds.</p>
           </motion.div>
 
           <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-2 md:gap-3">
