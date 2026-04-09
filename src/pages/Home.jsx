@@ -177,7 +177,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link to={createPageUrl("CreateBook")}>
-                <Button variant="outline" className="h-14 px-6 text-base border-white/30 text-white hover:bg-white/10 rounded-2xl backdrop-blur-sm">
+                <Button className="h-14 px-6 text-base bg-white/15 border border-white/30 text-white hover:bg-white/25 rounded-2xl backdrop-blur-sm">
                   👀 See a preview first
                 </Button>
               </Link>
