@@ -15,6 +15,9 @@ import OrderTracking from './pages/OrderTracking';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import FeedbackWidget from '@/components/FeedbackWidget';
+import CookieConsent from '@/components/CookieConsent';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import BottomNav from '@/components/BottomNav';
 import ThemeProvider from '@/lib/ThemeProvider';
 
@@ -53,6 +56,7 @@ const AuthenticatedApp = () => {
   return (
     <>
     <FeedbackWidget />
+    <CookieConsent />
     <BottomNav />
     <Routes>
       <Route path="/" element={
@@ -78,6 +82,8 @@ const AuthenticatedApp = () => {
       <Route path="/OrderTracking" element={<LayoutWrapper currentPageName="OrderTracking"><OrderTracking /></LayoutWrapper>} />
       <Route path="/Contact" element={<LayoutWrapper currentPageName="Contact"><Contact /></LayoutWrapper>} />
       <Route path="/AffiliateMarketplace" element={<AffiliateMarketplace />} />
+      <Route path="/PrivacyPolicy" element={<LayoutWrapper currentPageName="PrivacyPolicy"><PrivacyPolicy /></LayoutWrapper>} />
+      <Route path="/TermsOfService" element={<LayoutWrapper currentPageName="TermsOfService"><TermsOfService /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </>
