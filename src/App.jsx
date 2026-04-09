@@ -18,6 +18,7 @@ import FeedbackWidget from '@/components/FeedbackWidget';
 import CookieConsent from '@/components/CookieConsent';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import DataDeletion from './pages/DataDeletion';
 import BottomNav from '@/components/BottomNav';
 import ThemeProvider from '@/lib/ThemeProvider';
 
@@ -84,6 +85,7 @@ const AuthenticatedApp = () => {
       <Route path="/AffiliateMarketplace" element={<AffiliateMarketplace />} />
       <Route path="/PrivacyPolicy" element={<LayoutWrapper currentPageName="PrivacyPolicy"><PrivacyPolicy /></LayoutWrapper>} />
       <Route path="/TermsOfService" element={<LayoutWrapper currentPageName="TermsOfService"><TermsOfService /></LayoutWrapper>} />
+      <Route path="/DataDeletion" element={<DataDeletion />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </>
