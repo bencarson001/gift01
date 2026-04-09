@@ -61,6 +61,7 @@ Deno.serve(async (req) => {
       image_url: image_url || null,
       status: 'posted',
       post_id: result.id,
+      scheduled_for: new Date().toISOString(),
     });
 
     return Response.json({
