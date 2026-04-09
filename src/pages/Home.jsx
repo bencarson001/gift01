@@ -153,15 +153,15 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6 text-sm">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              Trusted by 10,000+ gift-givers across the UK
-            </div>
+            <div className="inline-flex items-center gap-2 bg-amber-400/20 backdrop-blur-sm border border-amber-400/40 rounded-full px-4 py-1.5 mb-6 text-sm font-medium">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            🎉 Over 10,000 books gifted across the UK
+          </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-5">
-              Turn Memories Into
+              The Most Thoughtful Gift You'll Ever Give —
               <br />
-              <span className="shimmer-text">Magical Gift Books</span>
+              <span className="shimmer-text">A Book Just About Them</span>
             </h1>
 
             <p className="text-lg md:text-xl text-purple-200 max-w-xl mx-auto mb-8 leading-relaxed">
@@ -174,6 +174,11 @@ export default function Home() {
                 <Button className="h-14 px-8 text-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-2xl shadow-lg shadow-amber-500/30 glow-pulse">
                   <BookOpen className="w-5 h-5 mr-2" />
                   Create Your Book — From £9.99
+                </Button>
+              </Link>
+              <Link to={createPageUrl("CreateBook")}>
+                <Button variant="outline" className="h-14 px-6 text-base border-white/30 text-white hover:bg-white/10 rounded-2xl backdrop-blur-sm">
+                  👀 See a preview first
                 </Button>
               </Link>
             </div>
@@ -200,7 +205,7 @@ export default function Home() {
 
         {/* Scroll hint */}
           <motion.div
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/50 text-xs"
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/60 text-xs z-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
@@ -251,12 +256,12 @@ export default function Home() {
             className="text-center mb-8"
           >
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5 mb-4 text-sm text-amber-800 font-medium">
-              👇 Tap your occasion below to start instantly
+              👇 Pick your occasion — book ready in 60 seconds
             </div>
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               What's the Occasion?
             </h2>
-            <p className="text-gray-500 text-sm">No sign-up needed. Preview your book free in 60 seconds.</p>
+            <p className="text-gray-500 text-sm">No account needed. Preview free, pay only if you love it.</p>
           </motion.div>
 
           <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-2 md:gap-3">
