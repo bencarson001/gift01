@@ -50,10 +50,23 @@ function StarRating({ rating }) {
   );
 }
 
+const ASSOCIATE_TAG = 'giftmybook21-21';
+
+function ensureAffiliateTag(url) {
+  if (!url) return url;
+  try {
+    const u = new URL(url);
+    u.searchParams.set('tag', ASSOCIATE_TAG);
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 function ProductCard({ product, onTrackClick }) {
   const handleClick = () => {
     onTrackClick(product.id);
-    window.open(product.affiliate_url, "_blank", "noopener,noreferrer");
+    window.open(ensureAffiliateTag(product.affiliate_url), "_blank", "noopener,noreferrer");
   };
 
   return (
