@@ -13,7 +13,7 @@ const CATEGORIES = [
 ];
 
 const PRODUCTS_PER_CATEGORY = 12;
-const KEEP_TOP_PERCENT = 0.6; // Keep top 60% performers
+const KEEP_TOP_PERCENT = 0.6;
 
 function getWeekKey() {
   const now = new Date();
@@ -22,13 +22,15 @@ function getWeekKey() {
   return `${now.getFullYear()}-W${String(week).padStart(2, '0')}`;
 }
 
-function buildAffiliateUrl(asin) {
-  if (asin) return `https://www.amazon.co.uk/dp/${asin}?tag=${ASSOCIATE_TAG}`;
-  return null;
-}
-
+// Always use search URL — ASIN-direct links may 404 if ASIN is hallucinated
 function buildSearchUrl(query) {
   return `https://www.amazon.co.uk/s?k=${encodeURIComponent(query)}&tag=${ASSOCIATE_TAG}`;
+}
+
+// Amazon CDN image URL from ASIN
+function buildAmazonImageUrl(asin) {
+  if (!asin) return null;
+  return `https://m.media-amazon.com/images/P/${asin}.01._SX300_SY300_.jpg`;
 }
 
 Deno.serve(async (req) => {
@@ -78,16 +80,16 @@ Requirements:
 - Price range: £5-£150 GBP
 - Must have good Amazon UK reviews (4+ stars)
 - Include a mix of price points
-- Use realistic ASINs where possible (9-10 character alphanumeric starting with B0)
+- CRITICAL: Provide a real Amazon ASIN for every product you are confident about (B0 followed by 9 alphanumeric characters). Only include an ASIN if you are sure it is correct — it is used to load the product image.
 - Prioritise items that make great gifts
 
 For each product return:
-- title: exact product name
+- title: exact product name as listed on Amazon UK
 - description: compelling 1-sentence description (max 20 words)
 - price_gbp: approximate price
 - rating: star rating (4.0-5.0)
 - review_count: approximate review count
-- asin: Amazon ASIN if you know a real one, otherwise null
+- asin: real Amazon ASIN (B0...) if you are confident, otherwise null
 - is_trending: true if it's a current bestseller/trending item
 - badge: one of "Best Seller", "Top Rated", "New This Week", "Trending", or null
 - tags: array of 3-5 search keywords
@@ -125,9 +127,8 @@ Return as JSON array of ${PRODUCTS_PER_CATEGORY} products.`;
         const products = result?.products || [];
 
         for (const p of products) {
-          const affiliateUrl = p.asin
-            ? buildAffiliateUrl(p.asin)
-            : buildSearchUrl(`${p.title} UK`);
+          const affiliateUrl = buildSearchUrl(`${p.title} UK`);
+          const image_url = buildAmazonImageUrl(p.asin);
 
           newProducts.push({
             title: p.title,
@@ -147,6 +148,7 @@ Return as JSON array of ${PRODUCTS_PER_CATEGORY} products.`;
             ai_curated: true,
             tags: p.tags || [],
             badge: p.badge || null,
+            image_url: image_url || null,
           });
         }
       } catch (catErr) {
