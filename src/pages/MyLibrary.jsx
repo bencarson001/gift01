@@ -61,8 +61,11 @@ export default function MyLibrary() {
   }, []);
 
   const { data: books = [], isLoading } = useQuery({
-    queryKey: ["my-books"],
-    queryFn: () => base44.entities.Book.list("-created_date", 50),
+    queryKey: ["my-books", user?.email],
+    queryFn: () => user?.email
+      ? base44.entities.Book.filter({ created_by: user.email }, "-created_date", 50)
+      : [],
+    enabled: !!user,
   });
 
   const { data: allReviews = [] } = useQuery({
@@ -102,7 +105,7 @@ export default function MyLibrary() {
               👤 Profile
             </Link>
             <Link to={createPageUrl("Referrals")} className="text-sm text-purple-600 hover:text-purple-800 font-medium hidden sm:block">
-              🎁 Earn £1
+              🎁 Earn £2
             </Link>
             <Link to={createPageUrl("CreateBook")}>
               <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl shadow-md shadow-purple-200">
@@ -340,7 +343,7 @@ export default function MyLibrary() {
               className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-5 border border-amber-200"
             >
               <p className="text-sm font-bold text-amber-800 mb-1">✨ Go Unlimited</p>
-              <p className="text-xs text-amber-700 mb-3">Create unlimited books for just £7.99/month</p>
+              <p className="text-xs text-amber-700 mb-3">Create unlimited books for just £10/month</p>
               <Link to={createPageUrl("Checkout") + "?plan=subscription"}>
                 <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold rounded-xl">
                   Upgrade Now

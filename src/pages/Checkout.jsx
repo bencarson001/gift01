@@ -18,8 +18,8 @@ import AppleGooglePay from "../components/checkout/AppleGooglePay";
 const PLAN_DETAILS = {
   digital: {
     name: "Digital PDF",
-    price: 9.99,
-    vat: 1.67,
+    price: 24.99,
+    vat: 4.17,
     icon: Download,
     color: "from-purple-500 to-purple-700",
     badge: "Instant Download",
@@ -28,8 +28,8 @@ const PLAN_DETAILS = {
   },
   printed: {
     name: "Premium Hardcover",
-    price: 29.99,
-    vat: 5.00,
+    price: 39.99,
+    vat: 6.67,
     icon: Truck,
     color: "from-amber-500 to-amber-700",
     badge: "Free UK Delivery",
@@ -486,7 +486,7 @@ export default function Checkout() {
                     { icon: "🔒", text: "Payments secured by Stripe" },
                     { icon: "🇬🇧", text: "UK company, GDPR compliant" },
                     { icon: "⭐", text: "4.9/5 from 10,000+ customers" },
-                    { icon: "↩️", text: "30-day money-back guarantee" },
+                    { icon: "✨", text: "Satisfaction guarantee" },
                   ].map((t, i) => (
                     <div key={i} className="flex items-center gap-3 text-sm text-gray-600">
                       <span className="text-base">{t.icon}</span>

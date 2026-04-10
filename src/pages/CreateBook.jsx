@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { trackFeature } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,6 +12,7 @@ import OccasionCard from "../components/OccasionCard";
 import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
 import WizardQuestion from "../components/WizardQuestion";
 import BookOpeningLoader from "../components/BookOpeningLoader";
+import GenerationProgress, { addStoredTime } from "../components/GenerationProgress";
 import { getQuestionsForOccasion } from "../components/wizard/WizardQuestions";
 
 const OCCASIONS = [
@@ -29,6 +30,14 @@ export default function CreateBook() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [generationError, setGenerationError] = useState(null);
+  const [genStep, setGenStep] = useState("story");
+  const [genStartTime, setGenStartTime] = useState(null);
+  const [showLoginNudge, setShowLoginNudge] = useState(false);
+  const [user, setUser] = useState(null);
+
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   usePageTracking("CreateBook");
   const questions = selectedOccasion ? getQuestionsForOccasion(selectedOccasion) : [];
@@ -63,15 +72,26 @@ export default function CreateBook() {
   const generateBook = useCallback(async () => {
     setStep("generating");
     setGenerationError(null);
+    const startTime = Date.now();
+    setGenStartTime(startTime);
+    setGenStep("story");
     trackFeature("book_generation_started", "CreateBook", { occasion: selectedOccasion });
 
     try {
     const recipientName = answers.recipient_name || "Someone Special";
     const senderName = answers.sender_name || "A friend";
     const artStyle = answers.art_style || "watercolour";
+    const writingStyle = answers.writing_style || "heartfelt";
 
-    // Generate story content
-    const storyPrompt = `You are a brilliantly witty British author creating a personalised gift book. Write in British English.
+    const styleGuide = {
+      heartfelt: "warm, emotional and touching",
+      humorous: "funny, witty and full of British humour with jokes and puns",
+      adventurous: "exciting, dramatic with adventure and action",
+      educational: "informative, inspiring and subtly educational",
+      poetic: "lyrical, poetic with beautiful descriptive language",
+    }[writingStyle] || "warm and heartfelt";
+
+    const storyPrompt = `You are a brilliantly creative British author creating a personalised gift book. Write in British English.
 
 Occasion: ${selectedOccasion.replace(/_/g, " ")}
 Recipient: ${recipientName}
@@ -79,7 +99,10 @@ From: ${senderName}
 Relationship: ${answers.relationship || "friend"}
 Personality: ${answers.personality || "wonderful person"}
 Memories: ${answers.memories || "many great times together"}
+Writing style: ${styleGuide}
 ${answers.age ? `Age: ${answers.age}` : ""}
+${answers.plot_points ? `Specific plot points to include: ${answers.plot_points}` : ""}
+${answers.characters ? `Extra characters/people to include: ${answers.characters}` : ""}
 ${answers.birthday_vibe ? `Vibe: ${answers.birthday_vibe}` : ""}
 ${answers.embarrassing_moments ? `Embarrassing moments: ${answers.embarrassing_moments}` : ""}
 ${answers.bad_habits ? `Bad habits: ${answers.bad_habits}` : ""}
@@ -88,11 +111,11 @@ ${answers.special_moments ? `Special moments: ${answers.special_moments}` : ""}
 ${answers.favourite_things ? `Favourite things: ${answers.favourite_things}` : ""}
 ${answers.child_age ? `Child age: ${answers.child_age}` : ""}
 
-Create a heartfelt, entertaining 20-page personalised book. Each page should have engaging text (2-4 sentences). Make it emotional, personal, and sprinkled with British humour. Include specific references to the details provided.
+Create a ${styleGuide} 20-page personalised book. Each page: 2-4 sentences. Include specific references to the details provided.
 
-Return a JSON object with:
-- title: A creative, catchy book title
-- pages: Array of 20 objects, each with "page_number" (1-20), "text" (the page content), "image_prompt" (a detailed illustration description for AI image generation in ${artStyle} style, featuring the specific details from the book, max 100 words)`;
+Return JSON:
+- title: creative book title
+- pages: array of 20 objects with page_number, text, image_prompt (${artStyle} illustration, max 80 words)`;
 
     const storyResult = await base44.integrations.Core.InvokeLLM({
       prompt: storyPrompt,
@@ -115,10 +138,9 @@ Return a JSON object with:
       },
     });
 
-    // Generate cover + all illustrations in parallel for maximum speed
-    const coverPrompt = `Beautiful ${artStyle} style book cover illustration for a personalised gift book titled "${storyResult.title}". 
-For ${recipientName}, occasion: ${selectedOccasion.replace(/_/g, " ")}. 
-Elegant, premium, magical feel with warm colours. No text in the image.`;
+    setGenStep("images");
+
+    const coverPrompt = `Beautiful ${artStyle} style book cover for a personalised gift book titled "${storyResult.title}". For ${recipientName}, ${selectedOccasion.replace(/_/g, " ")}. Elegant, warm colours. No text.`;
 
     const [coverImage, ...illustrations] = await Promise.all([
       base44.integrations.Core.GenerateImage({ prompt: coverPrompt }),
@@ -126,12 +148,13 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
         const page = storyResult.pages[i];
         if (!page) return Promise.resolve(null);
         return base44.integrations.Core.GenerateImage({
-          prompt: `${artStyle} style illustration: ${page.image_prompt}. Warm, magical, premium quality.`,
+          prompt: `${artStyle} illustration: ${page.image_prompt}. Warm, magical, premium quality.`,
         });
       }),
     ]);
 
-    // Build pages content
+    setGenStep("saving");
+
     const pagesContent = storyResult.pages.map((page, i) => {
       const illustrationIndex = [0, 4, 9, 14].indexOf(i);
       return {
@@ -144,7 +167,6 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
 
     const shareId = Math.random().toString(36).substring(2, 10);
 
-    // Save book
     const book = await base44.entities.Book.create({
       title: storyResult.title,
       occasion: selectedOccasion,
@@ -160,6 +182,7 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
       total_pages: pagesContent.length,
     });
 
+    addStoredTime(Date.now() - startTime);
     navigate(createPageUrl("BookPreview") + `?id=${book.id}`);
   } catch (err) {
     await logError({
@@ -167,14 +190,9 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
       severity: "high",
       title: "Book Generation Failed",
       message: err.message || String(err),
-      context: {
-        occasion: selectedOccasion,
-        recipient_name: answers.recipient_name,
-        art_style: answers.art_style,
-        error: err.message,
-      },
+      context: { occasion: selectedOccasion, recipient_name: answers.recipient_name, error: err.message },
     });
-    setGenerationError(err.message || "Something went wrong generating your book.");
+    setGenerationError(err.message || "Something went wrong generating your book. Please try again.");
     setStep("questions");
   }
   }, [answers, selectedOccasion, navigate]);
@@ -260,6 +278,28 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
             </motion.div>
           )}
 
+          {/* Login nudge for non-logged-in users at last question */}
+          {step === "questions" && isLastQuestion && !user && (
+            <motion.div
+              key="login-nudge"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-xl mx-auto mb-4 bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3"
+            >
+              <span className="text-xl">💡</span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-purple-800">Save your book to your library</p>
+                <p className="text-xs text-purple-600 mt-0.5">Register or log in to keep all your books in one place and access them anytime.</p>
+                <button
+                  onClick={() => base44.auth.redirectToLogin(window.location.href)}
+                  className="mt-2 text-xs font-bold text-purple-700 underline hover:text-purple-900"
+                >
+                  Register / Log in →
+                </button>
+              </div>
+            </motion.div>
+          )}
+
           {/* Step 2: Questions */}
           {step === "questions" && currentQ && (
             <motion.div
@@ -318,7 +358,11 @@ Elegant, premium, magical feel with warm colours. No text in the image.`;
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
-              <BookOpeningLoader recipientName={answers.recipient_name} />
+              <GenerationProgress
+                currentStep={genStep}
+                recipientName={answers.recipient_name}
+                startTime={genStartTime || Date.now()}
+              />
             </motion.div>
           )}
         </AnimatePresence>

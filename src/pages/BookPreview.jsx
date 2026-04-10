@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Wand2, ShoppingBag, Loader2, Copy, Check } from "lucide-react";
+import { ArrowLeft, Wand2, ShoppingBag, Loader2, Copy, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -205,6 +205,22 @@ Return the full updated pages array.`,
           </motion.div>
         )}
 
+        {/* PDF Download for purchased digital books */}
+        {book.status === "purchased" && book.pdf_url && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.28 }}
+            className="mb-6 text-center"
+          >
+            <a href={book.pdf_url} download target="_blank" rel="noopener noreferrer">
+              <Button className="h-12 px-8 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold gap-2">
+                <Download className="w-4 h-4" /> Download as PDF
+              </Button>
+            </a>
+          </motion.div>
+        )}
+
         {/* Purchase CTA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -212,6 +228,7 @@ Return the full updated pages array.`,
           transition={{ delay: 0.3 }}
           className="text-center"
         >
+          {book.status !== "purchased" && (
           <div className="bg-white rounded-2xl shadow-xl p-8 border border-purple-100 relative overflow-hidden">
             <SparkleParticles active count={10} />
             <h3 className="font-serif text-2xl font-bold text-gray-900 mb-2">Love it? Make it real! 🎁</h3>
@@ -221,16 +238,17 @@ Return the full updated pages array.`,
                 onClick={() => navigate(createPageUrl("Checkout") + `?id=${book.id}&plan=digital`)}
                 className="h-12 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl"
               >
-                Digital PDF — £9.99
+                Digital PDF — £24.99
               </Button>
               <Button
                 onClick={() => navigate(createPageUrl("Checkout") + `?id=${book.id}&plan=printed`)}
                 className="h-12 px-6 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-xl shadow-lg"
               >
-                <ShoppingBag className="w-4 h-4 mr-2" /> Premium Hardcover — £29.99
+                <ShoppingBag className="w-4 h-4 mr-2" /> Premium Hardcover — £39.99
               </Button>
             </div>
           </div>
+          )}
         </motion.div>
       </div>
 

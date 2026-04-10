@@ -10,7 +10,7 @@ const FAQ = [
   { q: "How long does generation take?", a: "Most books are generated in under 60 seconds. Complex stories with many illustrations may take slightly longer." },
   { q: "Can I edit my book after generation?", a: "Absolutely! Use the 'Refine with AI' feature to make unlimited changes before purchasing." },
   { q: "How is the printed book quality?", a: "We use premium 170gsm satin paper with a luxury hardcover binding. It's genuinely beautiful." },
-  { q: "What if I'm not happy?", a: "We offer a 100% satisfaction guarantee. If you're not delighted, we'll refund you in full." },
+  { q: "What if I'm not happy?", a: "We stand by the quality of every book. If there's an issue with your order, please contact us and we'll do our best to make it right." },
   { q: "How long does delivery take?", a: "Printed books are typically delivered within 5-7 working days to UK addresses. Free delivery included!" },
   { q: "Is my data safe?", a: "Yes! We're fully GDPR compliant and never share your personal stories or data with anyone." },
 ];

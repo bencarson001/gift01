@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { BookOpen, Sparkles, Star, ArrowRight, ChevronRight, ChevronDown, X, MessageSquare } from "lucide-react";
+import { BookOpen, Sparkles, Star, ArrowRight, ChevronRight, ChevronDown, X, MessageSquare, User } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import TestimonialCarousel from "../components/TestimonialCarousel";
 import AffiliateOffers from "../components/AffiliateOffers";
@@ -44,6 +45,11 @@ export default function Home() {
     return !localStorage.getItem("gmb_welcome_seen");
   });
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [authUser, setAuthUser] = React.useState(undefined);
+
+  React.useEffect(() => {
+    base44.auth.me().then(setAuthUser).catch(() => setAuthUser(null));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setShowStickyBar(window.scrollY > 420);
@@ -118,6 +124,33 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* ── TOP NAV BAR (desktop) ── */}
+      <div className="bg-white border-b border-gray-100 hidden md:block">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <span className="font-serif text-lg font-bold text-gray-900">
+            GiftMyBook<span className="text-amber-500">UK</span>
+          </span>
+          <div className="flex items-center gap-4">
+            <Link to={createPageUrl("Pricing")} className="text-sm text-gray-600 hover:text-purple-600 font-medium">Pricing</Link>
+            <Link to={createPageUrl("AffiliateMarketplace")} className="text-sm text-gray-600 hover:text-purple-600 font-medium">Gift Shop</Link>
+            <Link to={createPageUrl("Contact")} className="text-sm text-gray-600 hover:text-purple-600 font-medium">Contact</Link>
+            {authUser ? (
+              <Link to={createPageUrl("MyLibrary")}>
+                <Button size="sm" className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white gap-1.5">
+                  <User className="w-3.5 h-3.5" /> My Library
+                </Button>
+              </Link>
+            ) : (
+              <button onClick={() => base44.auth.redirectToLogin(window.location.href)}>
+                <Button size="sm" className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white gap-1.5">
+                  <User className="w-3.5 h-3.5" /> Log In / Register
+                </Button>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* ── STICKY MOBILE CTA BAR ── */}
       <AnimatePresence>
         {showStickyBar && (
@@ -130,7 +163,7 @@ export default function Home() {
           >
             <div>
               <p className="text-xs font-bold text-gray-900">GiftMyBook<span className="text-amber-500">UK</span></p>
-              <p className="text-[10px] text-gray-500">Personalised books from £9.99</p>
+              <p className="text-[10px] text-gray-500">Personalised books from £24.99</p>
             </div>
             <Link to={createPageUrl("CreateBook")}>
               <Button className="h-9 px-4 text-sm bg-gradient-to-r from-amber-400 to-amber-500 text-gray-900 font-bold rounded-xl shadow-sm">
@@ -173,7 +206,7 @@ export default function Home() {
               <Link to={createPageUrl("CreateBook")}>
                 <Button className="h-14 px-8 text-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-2xl shadow-lg shadow-amber-500/30 glow-pulse">
                   <BookOpen className="w-5 h-5 mr-2" />
-                  Create Your Book — From £9.99
+                  Create Your Book — From £24.99
                 </Button>
               </Link>
               <Link to={createPageUrl("CreateBook")}>
@@ -376,7 +409,7 @@ export default function Home() {
               Create Your Book Now ✨
             </Button>
           </Link>
-          <p className="text-purple-300 text-sm mt-4">From £9.99 · Digital PDF or Premium Hardcover · Free UK Delivery</p>
+          <p className="text-purple-300 text-sm mt-4">From £24.99 · Digital PDF or Premium Hardcover · Free UK Delivery</p>
         </div>
       </section>
 

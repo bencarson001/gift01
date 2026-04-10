@@ -137,6 +137,38 @@ const OCCASION_SPECIFIC = {
   ],
 };
 
+const WRITING_STYLE_QUESTION = {
+  id: "writing_style",
+  label: "What writing style should the book have?",
+  emoji: "✍️",
+  type: "select",
+  options: [
+    { value: "heartfelt", label: "Heartfelt & emotional", emoji: "🥹" },
+    { value: "humorous", label: "Funny & humorous", emoji: "😂" },
+    { value: "adventurous", label: "Exciting & adventurous", emoji: "⚡" },
+    { value: "educational", label: "Inspiring & educational", emoji: "🌟" },
+    { value: "poetic", label: "Lyrical & poetic", emoji: "🌸" },
+  ],
+};
+
+const PLOT_POINTS_QUESTION = {
+  id: "plot_points",
+  label: "Any specific plot points or moments to include? (optional)",
+  emoji: "📝",
+  type: "textarea",
+  placeholder: "e.g. Include a scene at the beach in Cornwall, mention their promotion at work...",
+  hint: "These will be woven into the story naturally",
+};
+
+const CHARACTERS_QUESTION = {
+  id: "characters",
+  label: "Any other people or characters to include? (optional)",
+  emoji: "👥",
+  type: "textarea",
+  placeholder: "e.g. Their dog Biscuit, best friend Dan, Grandma Vera...",
+  hint: "They'll appear as characters in the story",
+};
+
 const ART_STYLE_QUESTION = {
   id: "art_style",
   label: "Pick an art style for the illustrations",
@@ -166,6 +198,9 @@ export function getQuestionsForOccasion(occasion) {
   return [
     ...BASE_QUESTIONS,
     ...specificQs,
+    WRITING_STYLE_QUESTION,
+    PLOT_POINTS_QUESTION,
+    CHARACTERS_QUESTION,
     ART_STYLE_QUESTION,
     DEDICATION_QUESTION,
   ];

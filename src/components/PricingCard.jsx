@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 const PLANS = {
   digital: {
     name: "Digital PDF",
-    price: "9.99",
+    price: "24.99",
     icon: Zap,
     color: "purple",
     features: [
@@ -20,7 +20,7 @@ const PLANS = {
   },
   printed: {
     name: "Premium Hardcover",
-    price: "29.99",
+    price: "39.99",
     icon: Crown,
     color: "amber",
     popular: true,
@@ -36,7 +36,7 @@ const PLANS = {
   },
   subscription: {
     name: "Unlimited Monthly",
-    price: "7.99",
+    price: "10.00",
     period: "/mo",
     icon: Sparkles,
     color: "rose",
