@@ -5,7 +5,14 @@
 /* Hide Base44 editor badge */
 [data-base44-badge],
 iframe[src*="base44"],
-a[href*="base44.com/edit"] {
+a[href*="base44.com/edit"],
+[class*="base44-badge"],
+[id*="base44-badge"],
+[class*="b44-badge"],
+[id*="b44-badge"],
+div[style*="position: fixed"][style*="bottom"][style*="right"] a[href*="base44"],
+#base44-editor-badge,
+.base44-editor-badge {
   display: none !important;
 }
 
