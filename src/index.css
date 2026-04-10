@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide Base44 editor badge */
+[data-base44-badge],
+iframe[src*="base44"],
+a[href*="base44.com/edit"] {
+  display: none !important;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
