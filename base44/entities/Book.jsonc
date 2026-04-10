@@ -1,0 +1,171 @@
+{
+  "name": "Book",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Generated book title"
+    },
+    "occasion": {
+      "type": "string",
+      "enum": [
+        "birthday",
+        "anniversary",
+        "baby",
+        "wedding",
+        "roast",
+        "kids_adventure",
+        "couples_love_story",
+        "corporate_thank_you",
+        "valentines",
+        "retirement",
+        "graduation",
+        "new_home",
+        "get_well",
+        "christmas",
+        "mothers_day",
+        "fathers_day",
+        "friendship",
+        "pet_tribute",
+        "travel_memoir",
+        "teacher_appreciation"
+      ],
+      "description": "Book occasion type"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "Name of the person receiving the book"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Name of the person giving the book"
+    },
+    "art_style": {
+      "type": "string",
+      "enum": [
+        "watercolour",
+        "cartoon",
+        "realistic",
+        "storybook",
+        "minimalist",
+        "vintage"
+      ],
+      "default": "watercolour"
+    },
+    "personalisation_answers": {
+      "type": "object",
+      "description": "All wizard answers stored as key-value pairs"
+    },
+    "pages_content": {
+      "type": "array",
+      "description": "Array of page objects with text and image_url",
+      "items": {
+        "type": "object",
+        "properties": {
+          "page_number": {
+            "type": "number"
+          },
+          "text": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "is_chapter_start": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "AI generated cover image URL"
+    },
+    "dedication": {
+      "type": "string",
+      "description": "Dedication page text"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "generating",
+        "preview",
+        "purchased",
+        "printed"
+      ],
+      "default": "draft"
+    },
+    "share_id": {
+      "type": "string",
+      "description": "Unique shareable link ID"
+    },
+    "pdf_url": {
+      "type": "string",
+      "description": "Generated PDF download URL"
+    },
+    "total_pages": {
+      "type": "number",
+      "default": 20
+    },
+    "is_template": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "occasion",
+    "recipient_name"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "write": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
