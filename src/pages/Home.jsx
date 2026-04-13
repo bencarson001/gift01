@@ -13,31 +13,31 @@ import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
 const OCCASIONS = [
-  { emoji: "🎂", label: "Birthday", key: "birthday" },
-  { emoji: "🔥", label: "Roast", key: "roast" },
-  { emoji: "👶", label: "New Baby", key: "baby" },
-  { emoji: "💕", label: "Love Story", key: "couples_love_story" },
-  { emoji: "🎓", label: "Graduation", key: "graduation" },
-  { emoji: "🏰", label: "Kids Story", key: "kids_adventure" },
-  { emoji: "💍", label: "Anniversary", key: "anniversary" },
-  { emoji: "🎄", label: "Christmas", key: "christmas" },
-  { emoji: "🌷", label: "Mum's Day", key: "mothers_day" },
-  { emoji: "🎉", label: "Retirement", key: "retirement" },
-];
+{ emoji: "🎂", label: "Birthday", key: "birthday" },
+{ emoji: "🔥", label: "Roast", key: "roast" },
+{ emoji: "👶", label: "New Baby", key: "baby" },
+{ emoji: "💕", label: "Love Story", key: "couples_love_story" },
+{ emoji: "🎓", label: "Graduation", key: "graduation" },
+{ emoji: "🏰", label: "Kids Story", key: "kids_adventure" },
+{ emoji: "💍", label: "Anniversary", key: "anniversary" },
+{ emoji: "🎄", label: "Christmas", key: "christmas" },
+{ emoji: "🌷", label: "Mum's Day", key: "mothers_day" },
+{ emoji: "🎉", label: "Retirement", key: "retirement" }];
+
 
 const HOW_IT_WORKS = [
-  { emoji: "✨", title: "Choose an Occasion", desc: "Pick from 20+ occasions — birthdays, roasts, kids stories and more." },
-  { emoji: "💬", title: "Share the Details", desc: "Tell us memories, inside jokes & hobbies — our AI does the magic." },
-  { emoji: "📖", title: "Preview Your Book", desc: "See your stunning personalised book with AI illustrations instantly." },
-  { emoji: "🎁", title: "Gift It!", desc: "Download digitally or order a premium hardcover with free UK delivery." },
-];
+{ emoji: "✨", title: "Choose an Occasion", desc: "Pick from 20+ occasions — birthdays, roasts, kids stories and more." },
+{ emoji: "💬", title: "Share the Details", desc: "Tell us memories, inside jokes & hobbies — our AI does the magic." },
+{ emoji: "📖", title: "Preview Your Book", desc: "See your stunning personalised book with AI illustrations instantly." },
+{ emoji: "🎁", title: "Gift It!", desc: "Download digitally or order a premium hardcover with free UK delivery." }];
+
 
 const STATS = [
-  { value: "10,000+", label: "Books Created" },
-  { value: "60s", label: "Average Creation Time" },
-  { value: "4.9★", label: "Customer Rating" },
-  { value: "Free", label: "UK Delivery" },
-];
+{ value: "10,000+", label: "Books Created" },
+{ value: "60s", label: "Average Creation Time" },
+{ value: "4.9★", label: "Customer Rating" },
+{ value: "Free", label: "UK Delivery" }];
+
 
 export default function Home() {
   usePageTracking("Home");
@@ -67,26 +67,26 @@ export default function Home() {
 
       {/* ── WELCOME POPUP ── */}
       <AnimatePresence>
-        {showWelcome && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={dismissWelcome}
-          >
+        {showWelcome &&
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={dismissWelcome}>
+          
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ type: "spring", stiffness: 200, damping: 22 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative"
-            >
+            initial={{ opacity: 0, scale: 0.92, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: "spring", stiffness: 200, damping: 22 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+            
               <button
-                onClick={dismissWelcome}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              onClick={dismissWelcome}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+              
                 <X className="w-5 h-5" />
               </button>
 
@@ -114,14 +114,14 @@ export default function Home() {
               </p>
 
               <Button
-                onClick={dismissWelcome}
-                className="w-full h-11 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl font-semibold"
-              >
+              onClick={dismissWelcome}
+              className="w-full h-11 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl font-semibold">
+              
                 Let's Get Started ✨
               </Button>
             </motion.div>
           </motion.div>
-        )}
+        }
       </AnimatePresence>
 
       {/* ── TOP NAV BAR (desktop) ── */}
@@ -134,33 +134,33 @@ export default function Home() {
             <Link to={createPageUrl("Pricing")} className="text-sm text-gray-600 hover:text-purple-600 font-medium">Pricing</Link>
             <Link to={createPageUrl("AffiliateMarketplace")} className="text-sm text-gray-600 hover:text-purple-600 font-medium">Gift Shop</Link>
             <Link to={createPageUrl("Contact")} className="text-sm text-gray-600 hover:text-purple-600 font-medium">Contact</Link>
-            {authUser ? (
-              <Link to={createPageUrl("MyLibrary")}>
+            {authUser ?
+            <Link to={createPageUrl("MyLibrary")}>
                 <Button size="sm" className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white gap-1.5">
                   <User className="w-3.5 h-3.5" /> My Library
                 </Button>
-              </Link>
-            ) : (
-              <button onClick={() => base44.auth.redirectToLogin(window.location.href)}>
+              </Link> :
+
+            <button onClick={() => base44.auth.redirectToLogin(window.location.href)}>
                 <Button size="sm" className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white gap-1.5">
                   <User className="w-3.5 h-3.5" /> Log In / Register
                 </Button>
               </button>
-            )}
+            }
           </div>
         </div>
       </div>
 
       {/* ── STICKY MOBILE CTA BAR ── */}
       <AnimatePresence>
-        {showStickyBar && (
-          <motion.div
-            initial={{ y: -60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -60, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 right-0 z-[100] md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md px-4 py-2.5 flex items-center justify-between gap-3"
-          >
+        {showStickyBar &&
+        <motion.div
+          initial={{ y: -60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -60, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed top-0 left-0 right-0 z-[100] md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-md px-4 py-2.5 flex items-center justify-between gap-3">
+          
             <div>
               <p className="text-xs font-bold text-gray-900">GiftMyBook<span className="text-amber-500">UK</span></p>
               <p className="text-[10px] text-gray-500">Personalised books from £24.99</p>
@@ -171,12 +171,12 @@ export default function Home() {
               </Button>
             </Link>
           </motion.div>
-        )}
+        }
       </AnimatePresence>
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#4A2D7A] to-[#2D1B4E] text-white"
-        style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <SparkleParticles active count={12} />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&q=80')] bg-cover bg-center opacity-10" />
 
@@ -184,8 +184,8 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+            transition={{ duration: 0.6 }}>
+            
             <div className="inline-flex items-center gap-2 bg-amber-400/20 backdrop-blur-sm border border-amber-400/40 rounded-full px-4 py-1.5 mb-6 text-sm font-medium">
             <Sparkles className="w-4 h-4 text-amber-400" />
             🎉 Over 10,000 books gifted across the UK
@@ -228,9 +228,9 @@ export default function Home() {
 
             {/* Social proof stars */}
             <div className="flex items-center justify-center gap-1 mt-6">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
-              ))}
+              {[...Array(5)].map((_, i) =>
+              <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+              )}
               <span className="text-purple-200 text-sm ml-2">4.9/5 from 500+ reviews</span>
             </div>
           </motion.div>
@@ -238,16 +238,16 @@ export default function Home() {
 
         {/* Scroll hint */}
           <motion.div
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/60 text-xs z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-          >
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-white/60 text-xs z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}>
+          
             <span>Scroll to explore</span>
             <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
-            >
+            animate={{ y: [0, 6, 0] }}
+            transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}>
+            
               <ChevronDown className="w-5 h-5" />
             </motion.div>
           </motion.div>
@@ -263,19 +263,19 @@ export default function Home() {
       {/* ── STATS STRIP ── */}
       <section className="bg-white py-6 px-4 border-b border-gray-100">
         <div className="max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="text-center"
-            >
+          {STATS.map((s, i) =>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.08 }}
+            className="text-center">
+            
               <p className="font-serif text-2xl font-bold text-purple-700">{s.value}</p>
               <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
             </motion.div>
-          ))}
+          )}
         </div>
       </section>
 
@@ -286,35 +286,35 @@ export default function Home() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-8"
-          >
+            className="text-center mb-8">
+            
             <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5 mb-4 text-sm text-amber-800 font-medium">
               👇 Pick your occasion — book ready in 60 seconds
             </div>
-            <h2 className="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              What's the Occasion?
+            <h2 className="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-2">What's the Occasion?
+
             </h2>
             <p className="text-gray-500 text-sm">No account needed. Preview free, pay only if you love it.</p>
           </motion.div>
 
           <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-10 gap-2 md:gap-3">
-            {OCCASIONS.map((occ, i) => (
-              <motion.div
-                key={occ.key}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.04 }}
-              >
+            {OCCASIONS.map((occ, i) =>
+            <motion.div
+              key={occ.key}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.04 }}>
+              
                 <Link
-                  to={createPageUrl("CreateBook") + `?occasion=${occ.key}`}
-                  className="flex flex-col items-center gap-1.5 bg-gradient-to-b from-purple-50 to-white border border-purple-100 hover:border-purple-300 hover:shadow-md hover:-translate-y-0.5 transition-all rounded-2xl py-3 px-1 text-center group"
-                >
+                to={createPageUrl("CreateBook") + `?occasion=${occ.key}`}
+                className="flex flex-col items-center gap-1.5 bg-gradient-to-b from-purple-50 to-white border border-purple-100 hover:border-purple-300 hover:shadow-md hover:-translate-y-0.5 transition-all rounded-2xl py-3 px-1 text-center group">
+                
                   <span className="text-2xl group-hover:scale-110 transition-transform">{occ.emoji}</span>
                   <span className="text-xs font-medium text-gray-700 leading-tight">{occ.label}</span>
                 </Link>
               </motion.div>
-            ))}
+            )}
           </div>
 
           <div className="text-center mt-6">
@@ -332,8 +332,8 @@ export default function Home() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-10"
-          >
+            className="text-center mb-10">
+            
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               How It Works
             </h2>
@@ -341,19 +341,19 @@ export default function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-4 gap-6">
-            {HOW_IT_WORKS.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12 }}
-                className="relative text-center"
-              >
+            {HOW_IT_WORKS.map((step, i) =>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.12 }}
+              className="relative text-center">
+              
                 {/* Connector line */}
-                {i < HOW_IT_WORKS.length - 1 && (
-                  <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-purple-100 z-0" />
-                )}
+                {i < HOW_IT_WORKS.length - 1 &&
+              <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-purple-100 z-0" />
+              }
                 <div className="relative z-10 w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-amber-50 rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-purple-100">
                   {step.emoji}
                 </div>
@@ -363,7 +363,7 @@ export default function Home() {
                 <h3 className="font-serif text-base font-bold text-gray-900 mb-1">{step.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
               </motion.div>
-            ))}
+            )}
           </div>
 
           <div className="text-center mt-10">
@@ -383,8 +383,8 @@ export default function Home() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mb-8"
-          >
+            className="text-center mb-8">
+            
             <h2 className="font-serif text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               Loved by Gift-Givers Everywhere
             </h2>
@@ -423,7 +423,7 @@ export default function Home() {
 
       {/* ── FOOTER ── */}
       <footer className="bg-gray-900 text-gray-400 py-8 px-4 pb-24 md:pb-8"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)" }}>
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)" }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -467,6 +467,6 @@ export default function Home() {
         </div>
       </footer>
 
-    </div>
-  );
+    </div>);
+
 }
