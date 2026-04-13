@@ -448,7 +448,7 @@ export default function Home() {
                 <li>About Us</li>
                 <li>Pricing</li>
                 <li><Link to="/Contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li>Blog</li>
+                
               </ul>
             </div>
             <div>
