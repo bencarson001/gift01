@@ -204,10 +204,10 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link to={createPageUrl("CreateBook")}>
-                <Button className="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 py-2 h-14 px-8 text-lg bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-2xl shadow-lg shadow-amber-500/30 glow-pulse hidden">
-                  <BookOpen className="w-5 h-5 mr-2" />
-                  Create Your Book — From £24.99
-                </Button>
+                
+
+
+                
               </Link>
               <Link to={createPageUrl("CreateBook")}>
                 <Button className="h-14 px-6 text-base bg-white/15 border border-white/30 text-white hover:bg-white/25 rounded-2xl backdrop-blur-sm">
