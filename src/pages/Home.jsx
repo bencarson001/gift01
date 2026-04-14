@@ -9,7 +9,6 @@ import TestimonialCarousel from "../components/TestimonialCarousel";
 import AffiliateOffers from "../components/AffiliateOffers";
 import AdSenseUnit from "../components/AdSenseUnit";
 import SparkleParticles from "../components/SparkleParticles";
-import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
 const OCCASIONS = [
@@ -99,7 +98,7 @@ export default function Home() {
 
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5">
                 <p className="text-sm text-amber-900 leading-relaxed">
-                  <strong>🚧 New site, still growing!</strong> We're under continuous development as we work towards the high-quality experience our customers deserve. You may encounter the occasional rough edge — we're on it!
+                  <strong>New site to be Adding amazing new features soon!</strong> We're always work towards building the high-quality experience our customers have come to expect from us. To access ypur FREE preview, you dont need to register anything, just click on start creating and follow stages on acreen. , the actual generation processing takes 1-3 minutes
                 </p>
               </div>
 
@@ -110,7 +109,7 @@ export default function Home() {
                 </span>{" "}
                 button in the bottom‑right to report any errors. We aim to squash every bug as quickly as possible.
                 <br /><br />
-                Thank you for your time — we hope you enjoy your personalised treasure for years to come. 🎁
+                Thank you for your time — we hope you enjoy your new personalised treasure for years to come. 🎁
               </p>
 
               <Button
