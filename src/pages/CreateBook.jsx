@@ -252,7 +252,7 @@ Return JSON:
 
               
                   <Button
-                onClick={startQuestions} className="bg-gradient-to-r text-white pt-2 pr-10 pb-2 pl-10 text-lg font-medium rounded-2xl inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-14 from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg">
+                onClick={startQuestions} className="bg-gradient-to-r text-white px-10 py-3 text-lg font-medium rounded-2xl inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-primary/90 h-14 from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg">
                 
                 
                     Continue <ArrowRight className="w-5 h-5 ml-2" />
