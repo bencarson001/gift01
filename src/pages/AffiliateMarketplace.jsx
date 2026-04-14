@@ -50,7 +50,7 @@ function StarRating({ rating }) {
   );
 }
 
-const ASSOCIATE_TAG = 'giftmybook-21';
+const ASSOCIATE_TAG = 'giftmybook-21'
 
 function ensureAffiliateTag(url) {
   if (!url) return url;
