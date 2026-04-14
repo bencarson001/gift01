@@ -216,7 +216,7 @@ Return JSON:
         </div>
       </div>
 
-      <div className="my-3 px-3 py-3 max-w-4xl">
+      <div className="mt-2 mr-3 mb-3 ml-3 px-3 py-3 max-w-4xl">
         <AnimatePresence mode="wait">
           {/* Step 1: Choose Occasion */}
           {step === "occasion" &&
