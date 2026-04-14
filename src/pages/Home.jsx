@@ -9,6 +9,7 @@ import TestimonialCarousel from "../components/TestimonialCarousel";
 import AffiliateOffers from "../components/AffiliateOffers";
 import AdSenseUnit from "../components/AdSenseUnit";
 import SparkleParticles from "../components/SparkleParticles";
+import UpcomingOccasionBanner from "../components/UpcomingOccasionBanner";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
 const OCCASIONS = [
@@ -98,7 +99,7 @@ export default function Home() {
 
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5">
                 <p className="text-sm text-amber-900 leading-relaxed">
-                  <strong>New site to be Adding amazing new features soon!</strong> We're always work towards building the high-quality experience our customers have come to expect from us. To access ypur FREE preview, you dont need to register anything, just click on start creating and follow stages on acreen. , the actual generation processing takes 1-3 minutes
+                  <strong>🚧 New site, still growing!</strong> We're under continuous development as we work towards the high-quality experience our customers deserve. You may encounter the occasional rough edge — we're on it!
                 </p>
               </div>
 
@@ -109,7 +110,7 @@ export default function Home() {
                 </span>{" "}
                 button in the bottom‑right to report any errors. We aim to squash every bug as quickly as possible.
                 <br /><br />
-                Thank you for your time — we hope you enjoy your new personalised treasure for years to come. 🎁
+                Thank you for your time — we hope you enjoy your personalised treasure for years to come. 🎁
               </p>
 
               <Button
@@ -223,7 +224,7 @@ export default function Home() {
             </div>
 
             {/* Upcoming occasion banner */}
-            
+            <UpcomingOccasionBanner />
 
             {/* Social proof stars */}
             <div className="flex items-center justify-center gap-1 mt-6">
@@ -447,12 +448,12 @@ export default function Home() {
                 <li>About Us</li>
                 <li>Pricing</li>
                 <li><Link to="/Contact" className="hover:text-white transition-colors">Contact</Link></li>
-                
+                <li>Blog</li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold text-sm mb-3">Legal</h4>
-              <ul className="space-y-2 text-sm"> 
+              <ul className="space-y-2 text-sm">
                 <li><Link to="/PrivacyPolicy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
                 <li><Link to="/TermsOfService" className="hover:text-white transition-colors">Terms of Service</Link></li>
                 <li><Link to="/PrivacyPolicy#cookies" className="hover:text-white transition-colors">Cookie Policy</Link></li>
@@ -468,4 +469,4 @@ export default function Home() {
 
     </div>);
 
-}d
+}
