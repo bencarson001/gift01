@@ -248,7 +248,7 @@ Return JSON:
               {selectedOccasion &&
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }} className="mt-2 pt-20 text-center">
+              animate={{ opacity: 1, y: 0 }} className="mt-2 pt-2 pb-20 text-center">
 
               
                   <Button
