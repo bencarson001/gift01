@@ -452,7 +452,7 @@ export default function Home() {
             </div>
             <div>
               <h4 className="text-white font-semibold text-sm mb-3">Legal</h4>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-2 text-sm"> 
                 <li><Link to="/PrivacyPolicy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
                 <li><Link to="/TermsOfService" className="hover:text-white transition-colors">Terms of Service</Link></li>
                 <li><Link to="/PrivacyPolicy#cookies" className="hover:text-white transition-colors">Cookie Policy</Link></li>
@@ -468,4 +468,4 @@ export default function Home() {
 
     </div>);
 
-}
+}d
