@@ -223,7 +223,7 @@ export default function Home() {
             </div>
 
             {/* Upcoming occasion banner */}
-            <UpcomingOccasionBanner />
+            
 
             {/* Social proof stars */}
             <div className="flex items-center justify-center gap-1 mt-6">
