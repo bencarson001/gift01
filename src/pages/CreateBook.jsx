@@ -16,11 +16,11 @@ import GenerationProgress, { addStoredTime } from "../components/GenerationProgr
 import { getQuestionsForOccasion } from "../components/wizard/WizardQuestions";
 
 const OCCASIONS = [
-  "birthday", "anniversary", "baby", "wedding", "roast", "kids_adventure",
-  "couples_love_story", "corporate_thank_you", "valentines", "retirement",
-  "graduation", "new_home", "get_well", "christmas", "mothers_day",
-  "fathers_day", "friendship", "pet_tribute", "travel_memoir", "teacher_appreciation",
-];
+"birthday", "anniversary", "baby", "wedding", "roast", "kids_adventure",
+"couples_love_story", "corporate_thank_you", "valentines", "retirement",
+"graduation", "new_home", "get_well", "christmas", "mothers_day",
+"fathers_day", "friendship", "pet_tribute", "travel_memoir", "teacher_appreciation"];
+
 
 export default function CreateBook() {
   const navigate = useNavigate();
@@ -78,20 +78,20 @@ export default function CreateBook() {
     trackFeature("book_generation_started", "CreateBook", { occasion: selectedOccasion });
 
     try {
-    const recipientName = answers.recipient_name || "Someone Special";
-    const senderName = answers.sender_name || "A friend";
-    const artStyle = answers.art_style || "watercolour";
-    const writingStyle = answers.writing_style || "heartfelt";
+      const recipientName = answers.recipient_name || "Someone Special";
+      const senderName = answers.sender_name || "A friend";
+      const artStyle = answers.art_style || "watercolour";
+      const writingStyle = answers.writing_style || "heartfelt";
 
-    const styleGuide = {
-      heartfelt: "warm, emotional and touching",
-      humorous: "funny, witty and full of British humour with jokes and puns",
-      adventurous: "exciting, dramatic with adventure and action",
-      educational: "informative, inspiring and subtly educational",
-      poetic: "lyrical, poetic with beautiful descriptive language",
-    }[writingStyle] || "warm and heartfelt";
+      const styleGuide = {
+        heartfelt: "warm, emotional and touching",
+        humorous: "funny, witty and full of British humour with jokes and puns",
+        adventurous: "exciting, dramatic with adventure and action",
+        educational: "informative, inspiring and subtly educational",
+        poetic: "lyrical, poetic with beautiful descriptive language"
+      }[writingStyle] || "warm and heartfelt";
 
-    const storyPrompt = `You are a brilliantly creative British author creating a personalised gift book. Write in British English.
+      const storyPrompt = `You are a brilliantly creative British author creating a personalised gift book. Write in British English.
 
 Occasion: ${selectedOccasion.replace(/_/g, " ")}
 Recipient: ${recipientName}
@@ -117,84 +117,84 @@ Return JSON:
 - title: creative book title
 - pages: array of 20 objects with page_number, text, image_prompt (${artStyle} illustration, max 80 words)`;
 
-    const storyResult = await base44.integrations.Core.InvokeLLM({
-      prompt: storyPrompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          title: { type: "string" },
-          pages: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                page_number: { type: "number" },
-                text: { type: "string" },
-                image_prompt: { type: "string" },
-              },
-            },
-          },
-        },
-      },
-    });
+      const storyResult = await base44.integrations.Core.InvokeLLM({
+        prompt: storyPrompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            pages: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  page_number: { type: "number" },
+                  text: { type: "string" },
+                  image_prompt: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
 
-    setGenStep("images");
+      setGenStep("images");
 
-    const coverPrompt = `Beautiful ${artStyle} style book cover for a personalised gift book titled "${storyResult.title}". For ${recipientName}, ${selectedOccasion.replace(/_/g, " ")}. Elegant, warm colours. No text.`;
+      const coverPrompt = `Beautiful ${artStyle} style book cover for a personalised gift book titled "${storyResult.title}". For ${recipientName}, ${selectedOccasion.replace(/_/g, " ")}. Elegant, warm colours. No text.`;
 
-    const [coverImage, ...illustrations] = await Promise.all([
+      const [coverImage, ...illustrations] = await Promise.all([
       base44.integrations.Core.GenerateImage({ prompt: coverPrompt }),
       ...[0, 4, 9, 14].map((i) => {
         const page = storyResult.pages[i];
         if (!page) return Promise.resolve(null);
         return base44.integrations.Core.GenerateImage({
-          prompt: `${artStyle} illustration: ${page.image_prompt}. Warm, magical, premium quality.`,
+          prompt: `${artStyle} illustration: ${page.image_prompt}. Warm, magical, premium quality.`
         });
-      }),
-    ]);
+      })]
+      );
 
-    setGenStep("saving");
+      setGenStep("saving");
 
-    const pagesContent = storyResult.pages.map((page, i) => {
-      const illustrationIndex = [0, 4, 9, 14].indexOf(i);
-      return {
-        page_number: page.page_number,
-        text: page.text,
-        image_url: illustrationIndex !== -1 && illustrations[illustrationIndex] ? illustrations[illustrationIndex].url : "",
-        is_chapter_start: i % 5 === 0,
-      };
-    });
+      const pagesContent = storyResult.pages.map((page, i) => {
+        const illustrationIndex = [0, 4, 9, 14].indexOf(i);
+        return {
+          page_number: page.page_number,
+          text: page.text,
+          image_url: illustrationIndex !== -1 && illustrations[illustrationIndex] ? illustrations[illustrationIndex].url : "",
+          is_chapter_start: i % 5 === 0
+        };
+      });
 
-    const shareId = Math.random().toString(36).substring(2, 10);
+      const shareId = Math.random().toString(36).substring(2, 10);
 
-    const book = await base44.entities.Book.create({
-      title: storyResult.title,
-      occasion: selectedOccasion,
-      recipient_name: recipientName,
-      sender_name: senderName,
-      art_style: artStyle,
-      personalisation_answers: answers,
-      pages_content: pagesContent,
-      cover_image_url: coverImage.url,
-      dedication: answers.dedication || "",
-      status: "preview",
-      share_id: shareId,
-      total_pages: pagesContent.length,
-    });
+      const book = await base44.entities.Book.create({
+        title: storyResult.title,
+        occasion: selectedOccasion,
+        recipient_name: recipientName,
+        sender_name: senderName,
+        art_style: artStyle,
+        personalisation_answers: answers,
+        pages_content: pagesContent,
+        cover_image_url: coverImage.url,
+        dedication: answers.dedication || "",
+        status: "preview",
+        share_id: shareId,
+        total_pages: pagesContent.length
+      });
 
-    addStoredTime(Date.now() - startTime);
-    navigate(createPageUrl("BookPreview") + `?id=${book.id}`);
-  } catch (err) {
-    await logError({
-      type: "bug",
-      severity: "high",
-      title: "Book Generation Failed",
-      message: err.message || String(err),
-      context: { occasion: selectedOccasion, recipient_name: answers.recipient_name, error: err.message },
-    });
-    setGenerationError(err.message || "Something went wrong generating your book. Please try again.");
-    setStep("questions");
-  }
+      addStoredTime(Date.now() - startTime);
+      navigate(createPageUrl("BookPreview") + `?id=${book.id}`);
+    } catch (err) {
+      await logError({
+        type: "bug",
+        severity: "high",
+        title: "Book Generation Failed",
+        message: err.message || String(err),
+        context: { occasion: selectedOccasion, recipient_name: answers.recipient_name, error: err.message }
+      });
+      setGenerationError(err.message || "Something went wrong generating your book. Please try again.");
+      setStep("questions");
+    }
   }, [answers, selectedOccasion, navigate]);
 
   const currentQ = questions[currentQuestionIndex];
@@ -219,13 +219,13 @@ Return JSON:
       <div className="max-w-4xl mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
           {/* Step 1: Choose Occasion */}
-          {step === "occasion" && (
-            <motion.div
-              key="occasion"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+          {step === "occasion" &&
+          <motion.div
+            key="occasion"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}>
+            
               <div className="text-center mb-10">
                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                   What's the Occasion? ✨
@@ -235,138 +235,138 @@ Return JSON:
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                {OCCASIONS.map((occ) => (
-                  <OccasionCard
-                    key={occ}
-                    occasion={occ}
-                    isSelected={selectedOccasion === occ}
-                    onClick={handleOccasionSelect}
-                  />
-                ))}
+                {OCCASIONS.map((occ) =>
+              <OccasionCard
+                key={occ}
+                occasion={occ}
+                isSelected={selectedOccasion === occ}
+                onClick={handleOccasionSelect} />
+
+              )}
               </div>
 
-              {selectedOccasion && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center mt-10"
-                >
+              {selectedOccasion &&
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }} className="text-center">
+
+              
                   <Button
-                    onClick={startQuestions}
-                    className="h-14 px-10 text-lg bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl shadow-lg"
-                  >
+                onClick={startQuestions}
+                className="h-14 px-10 text-lg bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-2xl shadow-lg">
+                
                     Continue <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </motion.div>
-              )}
+            }
             </motion.div>
-          )}
+          }
 
           {/* Generation error banner */}
-          {step === "questions" && generationError && (
-            <motion.div
-              key="gen-error"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-xl mx-auto mb-4 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3"
-            >
+          {step === "questions" && generationError &&
+          <motion.div
+            key="gen-error"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-xl mx-auto mb-4 bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
+            
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-red-800">Generation failed — please try again</p>
                 <p className="text-xs text-red-600 mt-0.5">{generationError}</p>
               </div>
             </motion.div>
-          )}
+          }
 
           {/* Login nudge for non-logged-in users at last question */}
-          {step === "questions" && isLastQuestion && !user && (
-            <motion.div
-              key="login-nudge"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-xl mx-auto mb-4 bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3"
-            >
+          {step === "questions" && isLastQuestion && !user &&
+          <motion.div
+            key="login-nudge"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-xl mx-auto mb-4 bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-start gap-3">
+            
               <span className="text-xl">💡</span>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-purple-800">Save your book to your library</p>
                 <p className="text-xs text-purple-600 mt-0.5">Register or log in to keep all your books in one place and access them anytime.</p>
                 <button
-                  onClick={() => base44.auth.redirectToLogin(window.location.href)}
-                  className="mt-2 text-xs font-bold text-purple-700 underline hover:text-purple-900"
-                >
+                onClick={() => base44.auth.redirectToLogin(window.location.href)}
+                className="mt-2 text-xs font-bold text-purple-700 underline hover:text-purple-900">
+                
                   Register / Log in →
                 </button>
               </div>
             </motion.div>
-          )}
+          }
 
           {/* Step 2: Questions */}
-          {step === "questions" && currentQ && (
-            <motion.div
-              key="questions"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="max-w-xl mx-auto"
-            >
+          {step === "questions" && currentQ &&
+          <motion.div
+            key="questions"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="max-w-xl mx-auto">
+            
               <div className="bg-white rounded-2xl shadow-xl p-8 border border-purple-100">
                 <AnimatePresence mode="wait">
                   <WizardQuestion
-                    key={currentQuestionIndex}
-                    question={currentQ}
-                    value={currentAnswer}
-                    onChange={handleAnswer}
-                    index={currentQuestionIndex}
-                    total={questions.length}
-                  />
+                  key={currentQuestionIndex}
+                  question={currentQ}
+                  value={currentAnswer}
+                  onChange={handleAnswer}
+                  index={currentQuestionIndex}
+                  total={questions.length} />
+                
                 </AnimatePresence>
 
                 <div className="flex justify-between mt-8">
                   <Button
-                    variant="ghost"
-                    onClick={currentQuestionIndex === 0 ? () => setStep("occasion") : prevQuestion}
-                    className="text-gray-500"
-                  >
+                  variant="ghost"
+                  onClick={currentQuestionIndex === 0 ? () => setStep("occasion") : prevQuestion}
+                  className="text-gray-500">
+                  
                     <ArrowLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
 
-                  {isLastQuestion ? (
-                    <Button
-                      onClick={generateBook}
-                      disabled={!answers.recipient_name}
-                      className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-xl px-6"
-                    >
+                  {isLastQuestion ?
+                <Button
+                  onClick={generateBook}
+                  disabled={!answers.recipient_name}
+                  className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-gray-900 font-bold rounded-xl px-6">
+                  
                       <Wand2 className="w-4 h-4 mr-2" /> Generate Magic ✨
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={nextQuestion}
-                      className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl px-6"
-                    >
+                    </Button> :
+
+                <Button
+                  onClick={nextQuestion}
+                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl px-6">
+                  
                       Next <ArrowRight className="w-4 h-4 ml-1" />
                     </Button>
-                  )}
+                }
                 </div>
               </div>
             </motion.div>
-          )}
+          }
 
           {/* Step 3: Generating */}
-          {step === "generating" && (
-            <motion.div
-              key="generating"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
+          {step === "generating" &&
+          <motion.div
+            key="generating"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}>
+            
               <GenerationProgress
-                currentStep={genStep}
-                recipientName={answers.recipient_name}
-                startTime={genStartTime || Date.now()}
-              />
+              currentStep={genStep}
+              recipientName={answers.recipient_name}
+              startTime={genStartTime || Date.now()} />
+            
             </motion.div>
-          )}
+          }
         </AnimatePresence>
       </div>
-    </div>
-  );
+    </div>);
+
 }
