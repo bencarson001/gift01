@@ -101,4 +101,4 @@ export default function UpcomingOccasionBanner({ variant = "dark" }) {
       </Link>
     </motion.div>
   );
-}qn
+}
