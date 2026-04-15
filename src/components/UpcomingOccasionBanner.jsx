@@ -96,10 +96,9 @@ export default function UpcomingOccasionBanner({ variant = "dark" }) {
         to={createPageUrl("CreateBook")}
         className="shrink-0 bg-amber-400 hover:bg-amber-500 text-gray-900 font-bold text-sm px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5 whitespace-nowrap"
       >
-        Create Now 
-        the continue button for other occasions is 👇🏻
+        Create now
         <ArrowRight className="w-3.5 h-3.5" />
       </Link>
     </motion.div>
   );
-}
+}qn
