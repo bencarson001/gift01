@@ -99,7 +99,7 @@ export default function Home() {
 
               <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-5">
                 <p className="text-sm text-amber-900 leading-relaxed">
-                  <strong>🚧 New site, still growing!</strong> We're under continuous development as we work towards the high-quality experience our customers deserve. You may encounter the occasional rough edge — we're on it!
+                  <strong>🚧 New site, still growing!</strong> We're continuously improving the site to give our customers the high quality that they've come to expect from us please note you may very rarely encounter site errors
                 </p>
               </div>
 
@@ -110,7 +110,7 @@ export default function Home() {
                 </span>{" "}
                 button in the bottom‑right to report any errors. We aim to squash every bug as quickly as possible.
                 <br /><br />
-                Thank you for your time — we hope you enjoy your personalised treasure for years to come. 🎁
+                Thank you for your time — we hope you enjoy your personalised treasure for years to come. 🎁 thanks
               </p>
 
               <Button
