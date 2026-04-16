@@ -47,8 +47,13 @@ export default function CreateBook() {
     trackFeature("occasion_selected", "CreateBook", { occasion });
   };
 
-  const startQuestions = () => {
-    if (!selectedOccasion) return;
+  // Accept an optional occasion param so the button can pass the current
+  // selected value explicitly (works even if the button was moved in the DOM).
+  const startQuestions = (occasion) => {
+    const occ = occasion || selectedOccasion;
+    if (!occ) return;
+    // If an occasion was passed but not yet stored in state, persist it.
+    if (occ !== selectedOccasion) setSelectedOccasion(occ);
     setStep("questions");
     setCurrentQuestionIndex(0);
   };
@@ -140,7 +145,7 @@ Return JSON:
 
       setGenStep("images");
 
-      const coverPrompt = `Beautiful ${artStyle} style book cover for a personalised gift book titled "${storyResult.title}". For ${recipientName}, ${selectedOccasion.replace(/_/g, " ")}. Elegant, premium, personalised.`;
+      const coverPrompt = `Beautiful ${artStyle} style book cover for a personalised gift book titled "${storyResult.title}". For ${recipientName}, ${selectedOccasion.replace(/_/g, " ")}. Elegant[...]
 
       const [coverImage, ...illustrations] = await Promise.all([
       base44.integrations.Core.GenerateImage({ prompt: coverPrompt }),
@@ -238,16 +243,18 @@ Return JSON:
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }} className="mb-6 text-center">
-
               
+                  
                   <Button
-                onClick={startQuestions} className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white px-10 py-3 text-lg font-medium rounded-2xl inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all">
-                
-                
-                    Select Occasion <ArrowRight className="w-5 h-5 ml-2" />
+                    onClick={() => startQuestions(selectedOccasion)}
+                    disabled={!selectedOccasion}
+                    className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white px-10 py-3 text-lg font-medium rounded-2xl">
+                      Select Occasion <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                </motion.div>
-            }
+                
+              
+              </motion.div>
+          }
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                 {OCCASIONS.map((occ) =>
